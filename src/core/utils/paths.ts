@@ -8,8 +8,6 @@ export class StoryScorePaths {
 			tracks: `${root}/tracks`,
 			soundtracks: `${root}/soundtracks`,
 			leitmotifs: `${root}/leitmotifs`,
-			images: `${root}/images`,
-			authors: `${root}/authors`
 		};
 	}
 }

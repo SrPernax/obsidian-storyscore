@@ -2,17 +2,17 @@ import { App, Modal, Notice, Setting } from 'obsidian';
 import { getAudioFiles, getMarkdownFiles } from '../core/queries/file-queries';
 import { FilesSuggestModal } from '../core/utils/suggests';
 import { createLeitmotifFile } from '../core/commands/createleitmotif';
-import { t } from '../locales/i18n';
+import { t } from '../locales/lenguajes';
 import { LM_TYPES } from '../core/utils/constants';
 import type StoryScorePlugin from '../main';
 
 export class NewLeitmotifModal extends Modal {
 	motifTitle: string = "";
 	motifDescription: string = "";
-	entityType: string = "Personaje";
+	entityType: string = "Character";
 	entityNote: string = "";
 	motifAudio: string = "";
-	motifType: string = "Motivo melódico";
+	motifType: string = "Melodic motif";
 	customTrackType: string = "";
 	musicalAnnotations: string = "";
 
@@ -66,14 +66,14 @@ export class NewLeitmotifModal extends Modal {
 			.setName(t('LM_ENTITY'))
 			.setDesc(t('LM_ENTITY_DESC'))
 			.addDropdown(dropdown => dropdown
-				.addOption('Personaje', t('LM_ENTITY_CHAR'))
-				.addOption('Lugar', t('LM_ENTITY_PLACE'))
-				.addOption('Objeto', t('LM_ENTITY_ITEM'))
-				.addOption('Evento', t('LM_ENTITY_EVENT'))
-				.addOption('Sentimiento', t('LM_ENTITY_FEELING'))
-				.addOption('Memoria', t('LM_ENTITY_MEMORY'))
+				.addOption('Character', t('LM_ENTITY_CHAR'))
+				.addOption('Place', t('LM_ENTITY_PLACE'))
+				.addOption('Item', t('LM_ENTITY_ITEM'))
+				.addOption('Event', t('LM_ENTITY_EVENT'))
+				.addOption('Feeling', t('LM_ENTITY_FEELING'))
+				.addOption('Memory', t('LM_ENTITY_MEMORY'))
 				.addOption('custom', t("LM_ENTITY_CUSTOM"))
-				.setValue('Personaje')
+				.setValue('Character')
 				.onChange(value => {
 					this.entityType = value;
 					if (value === 'custom') {

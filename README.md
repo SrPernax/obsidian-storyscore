@@ -1,92 +1,73 @@
-# Obsidian Sample Plugin
+<div align="center">
+  <!-- Reemplaza 'banner.png' con la ruta real de tu imagen -->
+  <img src="assets/store/banner.png" alt="StoryScore Banner" width="100%">
+</div>
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+# StoryScore
+**StoryScore** es un plugin para Obsidian diseñado para compositores, directores de audio, escritores y creadores que necesitan organizar y gestionar bandas sonoras, pistas y leitmotifs directamente en su bóveda, conectando el proceso narrativo con el musical.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+Un registro ordenado de ideas musicales, versiones de mezcla y motivos recurrentes (leitmotifs) suele requerir múltiples aplicaciones externas u hojas de cálculo desordenadas. **StoryScore** resuelve esto permitiéndote vincular archivos de audio, letras y notas directamente a tus proyectos en Obsidian. Mantén toda la información conceptual y técnica en el mismo lugar donde escribes tu historia o documento de diseño.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
+<img src="assets/store/example.png" alt="StoryScore Banner" width="100%">
 
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and outputs a Notice on click.
-- Registers a global interval which logs 'setInterval' to the console.
+## Características de la versión actual
 
-## First time developing plugins?
+- **Gestor Principal (Manager):** Una vista unificada para ver, reproducir y filtrar todas tus bandas sonoras y pistas.
+- **Tarjetas de Pistas (Track Cards):** Reproductor integrado de audio con visualización rápida de metadatos.
+- **Creación de Bandas Sonoras:** Define álbumes o proyectos musicales generales.
+- **Gestión de Pistas:** Añade pistas con atributos personalizables como estado, tipo, letras y selección de archivos de audio locales.
+- **Sistema de Leitmotifs:** Registra y conecta motivos musicales con personajes, objetos o lugares, detallando anotaciones musicales.
+- **Bloques de código interactivos:** Incrusta tarjetas de pistas directamente en cualquier nota usando un bloque de código `storyscore`. ¡Ideal para fichas de personajes o escenas!
 
-Quick starting guide for new plugin devs:
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `src/main.ts` to `main.js`.
-- Make changes to `src/main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+### Manager (Gestor Principal)
+Vista centralizada accesible desde la barra lateral (Ribbon). Filtra tus pistas por banda sonora, escucha el progreso y administra todo de un vistazo.
+<div align="center">
+  <!-- Reemplaza con la ruta de tu captura -->
+  <img src="assets/store/manager.png" alt="StoryScore Manager" width="80%">
+</div>
 
-## Releasing new releases
+### Creación de Soundtracks y Tracks
+Crea pistas y leitmotifs de manera sencilla, asignando estados, tipos y vinculando archivos de audio de tu bóveda sin tener que tocar código.
+<div align="center">
+  <!-- Reemplaza con la ruta de tu captura -->
+  <img src="assets/store/add-track.png" alt="Formulario de Pista" width="80%">
+</div>
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+### Tarjetas Integradas (Codeblocks)
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+Inserta pistas directamente en el flujo de tu texto. Simplemente escribe `/storyscore` o usa el comando para generar la tarjeta jugable.
+<div align="center">
+  <img src="assets/store/track-card.png" alt="Track Card" width="80%">
+</div>
 
-## Adding your plugin to the community plugin list
+## Estructura de carpetas
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+En los ajustes del plugin puedes elegir tu **Carpeta Base** (por defecto `StoryScore`). Para mantener el orden y asegurar el buen funcionamiento del plugin, StoryScore gestiona internamente la siguiente estructura:
 
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v18 (`node --version`).
-- `npm i` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint
-
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code.
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-	"fundingUrl": "https://buymeacoffee.com"
-}
+```text
+📁 Tu Carpeta Base (StoryScore)
+ ├── 📁 soundtracks  (Notas de bandas sonoras)
+ ├── 📁 tracks       (Notas de pistas individuales)
+ └── 📁 leitmotifs   (Notas de motivos musicales)
 ```
+## ¿Qué viene después?
 
-If you have multiple URLs, you can also do:
+El desarrollo de StoryScore apenas comienza. En futuras actualizaciones se planea construir interfaces completas de documentación y vistas interactivas para conectar de forma mucho más visual las pistas, motivos y escenas, permitiendo mapear toda la música con la narrativa de un vistazo. A su vez, se desarrollarán herramientas de trabajo cooperativo con funcionalidades diseñadas específicamente para facilitar la colaboración entre equipos de escritores, diseñadores narrativos y compositores, haciendo que sincronizar la bóveda musical sea un proceso natural y aún más intuitivo.
 
-```json
-{
-	"fundingUrl": {
-		"Buy Me a Coffee": "https://buymeacoffee.com",
-		"GitHub Sponsor": "https://github.com/sponsors",
-		"Patreon": "https://www.patreon.com/"
-	}
-}
-```
+## Traducciones
+StoryScore cuenta con traducciones completas para:
+- 🇪🇸 **Español** 
+- 🇬🇧 **Inglés** 
 
-## API Documentation
+## Apóyame
+Si este plugin te resulta útil para tus proyectos y quieres apoyar su desarrollo, ¡considera invitarme a un café!
 
-See https://docs.obsidian.md
+<div align="center">
+  <a href="https://ko-fi.com/pernax">
+    <!-- Reemplaza con una captura bonita de tu Ko-fi -->
+    <img src="assets/store/kofi-preview.png" alt="Invítame a un café" width="250px">
+  </a>
+  <br><br>
+  <a href="https://ko-fi.com/pernax"><strong>Apóyame en Ko-fi</strong></a>
+</div>

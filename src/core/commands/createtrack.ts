@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
 import { StoryScorePaths } from '../utils/paths';
-import {TrackData} from "../data/track-data";
-import { t } from "../../locales/i18n";
+import {TrackData} from "../dtos/track-data";
+import { t } from "../../locales/lenguajes";
 
 export async function createTrackFile(app: App, data: TrackData, baseFolder: string): Promise<void> {
 	
@@ -33,15 +33,15 @@ audio: "[[${data.audio}]]"${leitmotifsYaml}
                    
 # 🎵 ${data.title}
                    
-> ${data.description || 'Sin descripción.'}
+> ${data.description || 'No description.'}
                    
-### Reproductor
+### Player
 \`\`\`storyscore
 id: ${uniqueId}
 \`\`\`
 
-### Letra
-${data.lyrics || '*Instrumental / Sin letra definida.*'}
+### Lyrics
+${data.lyrics || '*Instrumental / No lyrics defined.*'}
 `;
 
 	const safeFileName = data.title.replace(/[\\/:"*?<>|]/g, '');
@@ -56,27 +56,3 @@ ${data.lyrics || '*Instrumental / Sin letra definida.*'}
 	}
 }
 
-export async function updateTrackFile(app: App, file: any, data: TrackData): Promise<void> {
-	try {
-		await app.fileManager.processFrontMatter(file, (frontmatter) => {
-			frontmatter.album_id = data.albumId;
-			frontmatter.title = data.title;
-			frontmatter.description = data.description;
-			frontmatter.type = data.type;
-			frontmatter.diegetic = data.diegetic;
-			frontmatter.status = data.status;
-			frontmatter.audio = `[[${data.audio}]]`;
-			
-			if (data.leitmotifs && data.leitmotifs.length > 0) {
-				frontmatter.leitmotifs = data.leitmotifs.map(lm => `[[${lm}]]`);
-			} else {
-				delete frontmatter.leitmotifs;
-			}
-		});
-		new Notice(t('TRACK_UPDATE_NOTICE', data.title));
-	} catch (error) {
-		new Notice(t('ERROR_UPDATE_TRACK'));
-		console.error(error);
-		throw error;
-	}
-}

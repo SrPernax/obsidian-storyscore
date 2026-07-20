@@ -2,7 +2,7 @@ import {App, Modal, Notice, Setting} from 'obsidian';
 import {createSoundtrackFile} from "../core/commands/createsoundtrack";
 import {FilesSuggestModal} from "../core/utils/suggests";
 import {getAudioFiles, getImageFiles} from "../core/queries/file-queries";
-import {t} from "../locales/i18n";
+import {t} from "../locales/lenguajes";
 import type StoryScorePlugin from "../main";
 
 export class NewSoundtrackModal extends Modal {

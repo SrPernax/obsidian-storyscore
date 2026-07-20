@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting, setIcon } from 'obsidian';
 import MyPlugin from './main';
-import { t } from './locales/i18n';
+import { t } from './locales/lenguajes';
 
 export interface MyPluginSettings {
 	baseFolder: string;
@@ -29,7 +29,7 @@ export class SampleSettingTab extends PluginSettingTab {
 
 		const isDarkTheme = document.body.classList.contains('theme-dark');
 		const logoFilename = isDarkTheme ? 'logo-white.png' : 'logo-black.png';
-		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/${logoFilename}`);
+		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/${logoFilename}`);
 		
 		const logo = headerBox.createEl('img', { cls: 'storyscore-settings-logo' });
 		logo.src = logoPath;

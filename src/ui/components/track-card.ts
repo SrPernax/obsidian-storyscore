@@ -2,7 +2,7 @@ import { App, Notice, Modal } from 'obsidian';
 import { TrackResult } from '../../core/results/track-result';
 import { SoundtrackResult } from '../../core/results/soundtrack-result';
 import { NewTrackModal } from '../add-track';
-import { t } from '../../locales/i18n';
+import { t } from '../../locales/lenguajes';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/utils/constants';
 import type StoryScorePlugin from '../../main';
 
@@ -14,6 +14,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 
 	const cover = playerContainer.createEl("div", { cls: "storyscore-track-cover" });
 
+	let hasCover = false;
 	if (ost && ost.cover) {
 		let coverPath = ost.cover;
 		if (coverPath.startsWith("[[") && coverPath.endsWith("]]")) {
@@ -25,9 +26,12 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 			const imageUrl = app.vault.getResourcePath(imageFile);
 			cover.style.backgroundImage = `url("${imageUrl}")`;
 			cover.style.backgroundColor = "transparent";
+			hasCover = true;
 		}
-	} else if (!ost) {
-		const defaultLogoPath = app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/ns-logo.png`);
+	}
+	
+	if (!hasCover) {
+		const defaultLogoPath = app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/ns-logo.png`);
 		cover.style.backgroundImage = `url("${defaultLogoPath}")`;
 		cover.style.backgroundColor = "transparent";
 		cover.style.objectFit = "contain";

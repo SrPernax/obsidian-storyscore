@@ -1,13 +1,9 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
 import { getAllTracks } from "../queries/track-queries";
-import { t } from "../../locales/i18n";
+import { t } from "../../locales/lenguajes";
 import type StoryScorePlugin from "../../main";
 
-interface TrackItem {
-	id: string;
-	name: string;
-}
-
+import { TrackItem } from "../dtos/track-item";
 export class TrackInsertModal extends FuzzySuggestModal<TrackItem> {
 	editor: Editor;
 

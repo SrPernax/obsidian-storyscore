@@ -5,7 +5,7 @@ import { NewLeitmotifModal } from "./add-leitmotif";
 import { renderTrackCard } from "./components/track-card";
 import { getSoundtracks } from "../core/queries/soundtrack-queries";
 import { getAllTracks } from "../core/queries/track-queries";
-import { t } from "../locales/i18n";
+import { t } from "../locales/lenguajes";
 import type StoryScorePlugin from '../main';
 
 export const VIEW_TYPE_STORYSCORE = "storyscore-view";
@@ -70,7 +70,7 @@ export class StoryScoreView extends ItemView {
 		if (compactMode) titleBox.addClass('compact');
 
 		const logoFilename = isDarkTheme ? 'logo-white.png' : 'logo-black.png';
-		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/${logoFilename}`);
+		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/${logoFilename}`);
 		
 		const logo = titleBox.createEl('img', { cls: 'storyscore-logo' });
 		logo.src = logoPath;

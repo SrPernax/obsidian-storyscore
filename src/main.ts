@@ -9,7 +9,7 @@ import {renderTrackCard} from "./ui/components/track-card";
 import {getTrackById} from "./core/queries/track-queries";
 import {getSoundtrackById} from "./core/queries/soundtrack-queries";
 import { NewLeitmotifModal } from "./ui/add-leitmotif";
-import { t } from "./locales/i18n";
+import { t } from "./locales/lenguajes";
 
 export default class StoryScorePlugin extends Plugin {
 	settings!: MyPluginSettings;

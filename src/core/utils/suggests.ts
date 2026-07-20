@@ -1,4 +1,4 @@
-﻿import { App, FuzzySuggestModal, TFile } from 'obsidian';
+import { App, FuzzySuggestModal, TFile } from 'obsidian';
 
 export class FilesSuggestModal extends FuzzySuggestModal<TFile> {
 	audioFiles: TFile[];

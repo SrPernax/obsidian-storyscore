@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
 import { StoryScorePaths } from '../utils/paths';
-import { LeitmotifData } from "../data/leitmotif-data";
-import { t } from "../../locales/i18n";
+import { LeitmotifData } from "../dtos/leitmotif-data";
+import { t } from "../../locales/lenguajes";
 
 export async function createLeitmotifFile(app: App, data: LeitmotifData, baseFolder: string): Promise<void> {
 	
@@ -14,7 +14,7 @@ export async function createLeitmotifFile(app: App, data: LeitmotifData, baseFol
 		await app.vault.createFolder(paths.leitmotifs);
 	}
 
-	const uniqueId = "LM-" + Math.random().toString(36).substring(2, 7);
+	const uniqueId = "LM-" + Math.random().toString(36).substring(2, 9);
 	const entityNoteLink = data.entityNote ? `"[[${data.entityNote}]]"` : '""';
 	const audioLink = data.audio ? `"[[${data.audio}]]"` : '""';
 
@@ -30,20 +30,19 @@ audio: ${audioLink}
                    
 # 🎵 Leitmotif: ${data.title}
                    
-> ${data.description || 'Sin descripción narrativa.'}
+> ${data.description || 'No narrative description.'}
                    
-**Entidad Asociada:** ${data.entityType} ${data.entityNote ? `([[${data.entityNote}]])` : ''}
-**Tipo de Motivo:** ${data.motifType}
+**Associated Entity:** ${data.entityType} ${data.entityNote ? `([[${data.entityNote}]])` : ''}
+**Motif Type:** ${data.motifType}
 
-### Reproductor
+### Player
 \`\`\`storyscore
 id: ${uniqueId}
 \`\`\`
 
-### Anotaciones Musicales
-${data.musicalAnnotations || '*Sin anotaciones.*'}
+### Musical Annotations
+${data.musicalAnnotations || '*No annotations.*'}
 `;
-
 	const safeFileName = data.title.replace(/[\\/:"*?<>|]/g, '');
 	const filePath = `${paths.leitmotifs}/${safeFileName}.md`;
 

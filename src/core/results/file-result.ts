@@ -1,4 +1,4 @@
-﻿import { TFile } from "obsidian";
+import { TFile } from "obsidian";
 
 export interface FileResult {
 	file: TFile[];

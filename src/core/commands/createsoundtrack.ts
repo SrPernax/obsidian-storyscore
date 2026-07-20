@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
 import { StoryScorePaths } from '../utils/paths';
-import { SoundtrackData } from "../data/soundtrack-data";
-import { t } from "../../locales/i18n";
+import { SoundtrackData } from "../dtos/soundtrack-data";
+import { t } from "../../locales/lenguajes";
 
 export async function createSoundtrackFile(app: App, data: SoundtrackData, baseFolder: string): Promise<void> {
 
@@ -25,8 +25,7 @@ description: "${data.description}"${coverField}
                    
 # 🎵 ${data.title}
                    
-> ${data.description || 'Sin descripción.'}
-
+> ${data.description || 'No description.'}
 
 `;
 

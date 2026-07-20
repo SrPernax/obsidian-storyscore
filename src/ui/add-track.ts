@@ -1,16 +1,17 @@
 import { App, Modal, Notice, Setting, TFile } from 'obsidian';
 import { getSoundtracks } from "../core/queries/soundtrack-queries";
-import { createTrackFile, updateTrackFile } from "../core/commands/createtrack";
+import { createTrackFile } from "../core/commands/createtrack";
+import { updateTrackFile } from "../core/commands/updatetrack";
 import { getAudioFiles, getLeitmotifFiles } from "../core/queries/file-queries";
 import {FilesSuggestModal} from "../core/utils/suggests";
-import { t } from "../locales/i18n";
+import { t } from "../locales/lenguajes";
 import { TRACK_TYPES, TRACK_STATUSES } from "../core/utils/constants";
 import type StoryScorePlugin from "../main";
 
 export class NewTrackModal extends Modal {
 	trackTitle: string;
 	trackDescription: string;
-	trackType: string = "ambiente";
+	trackType: string = "ambient";
 	trackLyrics: string = "";
 	trackStatus: string = "wip";
 	trackDiegesis: string = "n/a";
@@ -37,14 +38,14 @@ export class NewTrackModal extends Modal {
 			if (fm) {
 				this.trackTitle = fm.title || "";
 				this.trackDescription = fm.description || "";
-				this.trackType = fm.type || "ambiente";
+				this.trackType = fm.type || "ambient";
 				this.trackDiegesis = fm.diegetic || "n/a";
 				this.trackStatus = fm.status || "wip";
 				this.trackAudio = fm.audio?.replace(/^\[\[|\]\]$/g, '') || "";
 				this.selectedAlbumId = fm.album_id || "none";
 				this.associatedLeitmotifs = fm.leitmotifs?.map((l: string) => l.replace(/^\[\[|\]\]$/g, '')) || [];
 				
-				if (!['ambiente', 'personaje', 'accion', 'menu'].includes(this.trackType)) {
+				if (!['ambient', 'character', 'action', 'ui'].includes(this.trackType)) {
 					this.customTrackType = this.trackType;
 					this.trackType = "custom";
 				}
@@ -59,12 +60,12 @@ export class NewTrackModal extends Modal {
 
 
 		if (audioFiles.length === 0) {
-			contentEl.createEl('h2', { text: '¡Alto ahí!' });
-			contentEl.createEl('p', { text: 'No tienes ningún archivo de audio en tu vault, añade uno antes de empezar.' });
+			contentEl.createEl('h2', { text: t('LM_NO_AUDIO_TITLE') || 'Hold on!' });
+			contentEl.createEl('p', { text: t('LM_NO_AUDIO_DESC') || 'You have no audio files in your vault. Please add one before starting.' });
 
 			new Setting(contentEl)
 				.addButton(btn => btn
-					.setButtonText('Cerrar')
+					.setButtonText(t('CLOSE') || 'Close')
 					.onClick(() => this.close())
 				);
 			return;
@@ -205,8 +206,8 @@ export class NewTrackModal extends Modal {
 			.setName(t('TRACK_DIEGESIS'))
 			.setDesc(t('TRACK_DIEGESIS_DESC'))
 			.addDropdown(dropDown => dropDown
-				.addOption('diegetica', t('TRACK_DIEGESIS_IN'))
-				.addOption('extradiegetica', t('TRACK_DIEGESIS_OUT'))
+				.addOption('diegetic', t('TRACK_DIEGESIS_IN'))
+				.addOption('non-diegetic', t('TRACK_DIEGESIS_OUT'))
 				.addOption('n/a', t('TRACK_DIEGESIS_MIXED'))
 				.setValue(this.trackDiegesis)
 				.onChange((value) => {
