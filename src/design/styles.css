@@ -204,4 +204,11 @@
 .storyscore-track-cover-transparent { background-color: transparent; }
 .storyscore-track-cover-default { background-size: contain; background-color: transparent; }
 
-
+.storyscore-settings-pernax-logo {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-bottom: -2px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

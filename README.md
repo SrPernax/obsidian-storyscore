@@ -78,9 +78,13 @@ If you want to contribute a translation:
 Your translation will be included in the next release, and you will be fully credited for your contribution!
 
 ## Support Me
-If you find this plugin useful for your projects and want to support its development, consider buying me a coffee!
+If you find this plugin useful for your projects and want to support its development, consider buying me a coffee!  :]
 
 <div align="center">
+  <img src="assets/store/pernax-logo.png" width="80" height="80" style="border-radius: 50%; object-fit: cover;">
+  <br>
+  <strong>SrPernax</strong>
+  <br><br>
   <a href="https://ko-fi.com/pernax" target="_blank">
     <img src="https://img.shields.io/badge/Support_Me_on_Ko--fi-FF5E5B?style=social&logo=ko-fi" alt="Support me on Ko-fi">
   </a>
@@ -92,5 +96,5 @@ If you find this plugin useful for your projects and want to support its develop
 
 <br>
 <div align="center">
-  Thanks for using <b>StoryScore</b> :]
+  Thanks for using <b>StoryScore</b>
 </div>

@@ -58,10 +58,10 @@ export const es = {
 	// Manager View
 	MANAGER_TITLE: "StoryScore",
 	MANAGER_ALL_TRACKS: "Todos los tracks",
-	MANAGER_ADD_SOUNDTRACK: "➕ Add Soundtrack",
-	MANAGER_REFRESH_ALL: "🔄 Refresh All",
-	MANAGER_ADD_TRACK: "➕ Add Track",
-	MANAGER_ADD_LEITMOTIF: "➕ Add Leitmotif",
+	MANAGER_ADD_SOUNDTRACK: "➕ Añadir Soundtrack",
+	MANAGER_REFRESH_ALL: "🔄 Refrescar Todo",
+	MANAGER_ADD_TRACK: "➕ Añadir Track",
+	MANAGER_ADD_LEITMOTIF: "➕ Añadir Leitmotif",
 	MANAGER_EMPTY_FILTER: "¡Parece que no hay pistas en este filtro!",
 	
 	// Track Card

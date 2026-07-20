@@ -47,6 +47,11 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		this.createSidebarButton(sidebar, 'help-circle', t('SETTINGS_TAB_HELP'), 'help');
 		
 		const footer = sidebar.createDiv({ cls: 'storyscore-settings-footer' });
+		
+		const pernaxLogoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/store/pernax-logo.png`);
+		const pernaxImg = footer.createEl('img', { cls: 'storyscore-settings-pernax-logo' });
+		pernaxImg.src = pernaxLogoPath;
+		
 		footer.createSpan({ text: t('SETTINGS_CREATED_BY') });
 		const authorBtn = footer.createEl('button', { text: 'Pernax', cls: 'storyscore-settings-author-btn' });
 		authorBtn.onclick = () => window.open("https://github.com/SrPernax");
@@ -107,7 +112,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 	}
 
 	renderHelpTab(container: HTMLElement) {
-		container.createDiv({ cls: 'storyscore-settings-spacer' });
+
 		
 		const guides = [
 			{ title: t('HELP_GUIDE1_TITLE'), desc: t('HELP_GUIDE1_DESC') },
@@ -126,7 +131,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 			contentDiv.appendChild(sanitizeHTMLToDom(guide.desc));
 		}
 		
-		container.createDiv({ cls: 'storyscore-settings-spacer' });
+
 		const s1 = new Setting(container)
 			.setName(t('HELP_SUPPORT_DEV'))
 			.setDesc(t('HELP_SUPPORT_DEV_DESC'))
@@ -138,7 +143,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		s1.nameEl.prepend(i1);
 		s1.nameEl.addClass('storyscore-setting-name');
 			
-		container.createDiv({ cls: 'storyscore-settings-spacer' });
+
 		const s2 = new Setting(container)
 			.setName(t('HELP_PLUGIN_INFO'))
 			.setDesc(t('HELP_PLUGIN_INFO_DESC'))
