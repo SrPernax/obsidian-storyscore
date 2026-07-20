@@ -2,11 +2,8 @@ import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsi
 import StoryScorePlugin from './main';
 import { t } from './locales/lenguajes';
 
-// @ts-ignore
 import LogoBlack from '../assets/plugin/logo-black.svg';
-// @ts-ignore
 import LogoWhite from '../assets/plugin/logo-white.svg';
-// @ts-ignore
 import PernaxLogo from '../assets/plugin/pernax-logo.svg';
 
 export interface StoryScoreSettings {

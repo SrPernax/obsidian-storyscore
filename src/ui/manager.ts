@@ -3,9 +3,7 @@ import { NewSoundtrackModal } from "./add-sountrack";
 import { NewTrackModal } from "./add-track";
 import { NewLeitmotifModal } from "./add-leitmotif";
 
-// @ts-ignore
 import LogoBlack from '../../assets/plugin/logo-black.svg';
-// @ts-ignore
 import LogoWhite from '../../assets/plugin/logo-white.svg';
 import { renderTrackCard } from "./components/track-card";
 import { getSoundtracks } from "../core/queries/soundtrack-queries";

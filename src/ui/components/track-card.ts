@@ -6,7 +6,6 @@ import { t } from '../../locales/lenguajes';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/utils/constants';
 import type StoryScorePlugin from '../../main';
 
-// @ts-ignore
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
 
 export function renderTrackCard(container: HTMLElement, track: TrackResult, ost: SoundtrackResult | undefined, app: App, plugin: StoryScorePlugin) {
