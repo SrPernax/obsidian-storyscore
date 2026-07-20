@@ -2,6 +2,10 @@ import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsi
 import StoryScorePlugin from './main';
 import { t } from './locales/lenguajes';
 
+import LogoBlack from '../assets/plugin/logo-black.svg';
+import LogoWhite from '../assets/plugin/logo-white.svg';
+import PernaxLogo from '../assets/plugin/pernax-logo.svg';
+
 export interface StoryScoreSettings {
 	baseFolder: string;
 	compactMode: boolean;
@@ -28,11 +32,10 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		const headerBox = containerEl.createDiv({ cls: 'storyscore-settings-header' });
 
 		const isDarkTheme = document.body.classList.contains('theme-dark');
-		const logoFilename = isDarkTheme ? 'logo-white.png' : 'logo-black.png';
-		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/${logoFilename}`);
+		const logoData = isDarkTheme ? LogoWhite : LogoBlack;
 		
 		const logo = headerBox.createEl('img', { cls: 'storyscore-settings-logo' });
-		logo.src = logoPath;
+		logo.src = logoData;
 
 		const textContainer = headerBox.createDiv({ cls: 'storyscore-settings-title-box' });
 		textContainer.createSpan({ text: 'StoryScore', cls: 'storyscore-settings-title' });
@@ -48,9 +51,8 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		
 		const footer = sidebar.createDiv({ cls: 'storyscore-settings-footer' });
 		
-		const pernaxLogoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/store/pernax-logo.png`);
 		const pernaxImg = footer.createEl('img', { cls: 'storyscore-settings-pernax-logo' });
-		pernaxImg.src = pernaxLogoPath;
+		pernaxImg.src = PernaxLogo;
 		
 		footer.createSpan({ text: t('SETTINGS_CREATED_BY') });
 		const authorBtn = footer.createEl('button', { text: 'Pernax', cls: 'storyscore-settings-author-btn' });
