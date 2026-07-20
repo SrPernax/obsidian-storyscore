@@ -1,0 +1,21 @@
+import { en } from './en';
+import { es } from './es';
+
+
+export function t(key: keyof typeof en, ...args: string[]): string {
+    const locale = (window as any).moment?.locale() || 'en';
+    
+    let translation = key as string;
+
+    if (locale === 'es') {
+        translation = es[key as keyof typeof es] || en[key] || key;
+    } else {
+        translation = en[key] || key;
+    }
+
+    args.forEach((arg, index) => {
+        translation = translation.replace(`{${index}}`, arg);
+    });
+
+    return translation;
+}

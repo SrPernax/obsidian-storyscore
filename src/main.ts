@@ -1,92 +1,124 @@
-import {
-	Editor,
-	MarkdownView,
-	MarkdownFileInfo,
-	Modal,
-	Notice,
-	Plugin,
-} from 'obsidian';
-import {
-	DEFAULT_SETTINGS,
-	MyPluginSettings,
-	SampleSettingTab,
-} from './settings';
+import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf, Notice} from 'obsidian';
+import { DEFAULT_SETTINGS, MyPluginSettings, SampleSettingTab } from './settings';
+import { NewTrackModal } from "./ui/add-track";
+import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/manager";
+import { NewSoundtrackModal } from "./ui/add-sountrack";
+import { TrackInsertModal } from "./core/commands/trackinsert";
+import {SoundtracksExist} from "./core/queries/soundtrack-queries";
+import {renderTrackCard} from "./ui/components/track-card";
+import {getTrackById} from "./core/queries/track-queries";
+import {getSoundtrackById} from "./core/queries/soundtrack-queries";
+import { NewLeitmotifModal } from "./ui/add-leitmotif";
+import { t } from "./locales/i18n";
 
-// Remember to rename these classes and interfaces!
-
-export default class MyPlugin extends Plugin {
+export default class StoryScorePlugin extends Plugin {
 	settings!: MyPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon('dice', 'Sample', (_evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+		this.registerView(
+			VIEW_TYPE_STORYSCORE,
+			(leaf) => new StoryScoreView(leaf, this)
+		);
+
+		this.addRibbonIcon('library', t('CMD_OPEN_STORYSCORE'), () => {
+			this.activateView();
 		});
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status bar text');
+		this.addRibbonIcon('disc', t('CMD_NEW_SOUNDTRACK'), (_evt: MouseEvent) => {
+			new NewSoundtrackModal(this.app, this).open();
+		});
 
-		// This adds a simple command that can be triggered anywhere
+		this.addRibbonIcon('music', t('CMD_NEW_TRACK'), () => {
+			new NewTrackModal(this.app, undefined, this).open();
+		});
+
+		this.addRibbonIcon('audio-lines', t('CMD_NEW_LEITMOTIF'), () => {
+			new NewLeitmotifModal(this.app, this).open();
+		});
+
 		this.addCommand({
-			id: 'open-modal-simple',
-			name: 'Open modal (simple)',
+			id: 'open-storyscore-lobby',
+			name: t('CMD_OPEN_MANAGER'),
 			callback: () => {
-				new SampleModal(this.app).open();
-			},
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'replace-selected',
-			name: 'Replace selected content',
-			editorCallback: (
-				editor: Editor,
-				_ctx: MarkdownView | MarkdownFileInfo,
-			) => {
-				editor.replaceSelection('Sample editor command');
-			},
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-modal-complex',
-			name: 'Open modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView =
-					this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-				return false;
+				this.activateView();
 			},
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.addCommand({
+			id: 'add-new-track',
+			name: t('CMD_NEW_TRACK'),
+			callback: () => {
+				new NewTrackModal(this.app, undefined, this).open();
+			},
+		});
+
+		this.addCommand({
+			id: 'add-new-ost',
+			name: t('CMD_NEW_SOUNDTRACK'),
+			callback: () => {
+				new NewSoundtrackModal(this.app, this).open();
+			},
+		});
+
+		this.addCommand({
+			id: 'add-new-leitmotif',
+			name: t('CMD_NEW_LEITMOTIF'),
+			callback: () => {
+				new NewLeitmotifModal(this.app, this).open();
+			},
+		});
+
+		this.addCommand({
+			id: 'insert-storyscore-track',
+			name: t('CMD_INSERT_TRACK'),
+			
+			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+				new TrackInsertModal(this.app, editor, this).open();
+			}
+		});
+		
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(activeDocument, 'click', (_evt: MouseEvent) => {
-			new Notice('Click');
-		});
+		this.registerMarkdownCodeBlockProcessor("storyscore", (source, el, ctx) => {
+			let trackId = source.trim();
 
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000),
-		);
+			if (trackId.toLowerCase().startsWith('id:')) {
+				trackId = trackId.substring(3).trim();
+			}
+			
+			const baseFolder = this.settings.baseFolder || 'StoryScore';
+			
+			const track = getTrackById(this.app, baseFolder, trackId);
+			if (track) {
+				const ost = getSoundtrackById(this.app, baseFolder, track.albumId);
+				renderTrackCard(el, track, ost, this.app, this);
+			} else {
+				el.createEl("p", { text: t('CODEBLOCK_ERR', trackId), cls: "resonance-error" });
+			}
+		});
 	}
 
-	onunload() {}
+	async activateView() {
+		const { workspace } = this.app;
+		let leaf: WorkspaceLeaf;
+
+		const leaves = workspace.getLeavesOfType(VIEW_TYPE_STORYSCORE);
+
+		if (leaves.length > 0) {
+			leaf = leaves[0]!;
+		} else {
+			leaf = workspace.getLeaf('tab')!;
+			await leaf.setViewState({ type: VIEW_TYPE_STORYSCORE, active: true });
+		}
+
+		workspace.revealLeaf(leaf);
+	}
+
+	onunload() {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_STORYSCORE);
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -98,17 +130,5 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
 	}
 }
