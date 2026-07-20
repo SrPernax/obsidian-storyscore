@@ -1,22 +1,22 @@
-import { App, PluginSettingTab, Setting, setIcon } from 'obsidian';
-import MyPlugin from './main';
+import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsidian';
+import StoryScorePlugin from './main';
 import { t } from './locales/lenguajes';
 
-export interface MyPluginSettings {
+export interface StoryScoreSettings {
 	baseFolder: string;
 	compactMode: boolean;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
+export const DEFAULT_SETTINGS: StoryScoreSettings = {
 	baseFolder: 'StoryScore',
 	compactMode: false,
 };
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+export class StoryScoreSettingTab extends PluginSettingTab {
+	plugin: StoryScorePlugin;
 	activeTab: 'folders' | 'help' | 'design' = 'folders';
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: StoryScorePlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -34,9 +34,9 @@ export class SampleSettingTab extends PluginSettingTab {
 		const logo = headerBox.createEl('img', { cls: 'storyscore-settings-logo' });
 		logo.src = logoPath;
 
-		const textContainer = headerBox.createEl('div', { cls: 'storyscore-settings-title-box' });
-		textContainer.createEl('span', { text: 'StoryScore', cls: 'storyscore-settings-title' });
-		textContainer.createEl('span', { text: `v${this.plugin.manifest.version}`, cls: 'storyscore-settings-version' });
+		const textContainer = headerBox.createDiv({ cls: 'storyscore-settings-title-box' });
+		textContainer.createSpan({ text: 'StoryScore', cls: 'storyscore-settings-title' });
+		textContainer.createSpan({ text: `v${this.plugin.manifest.version}`, cls: 'storyscore-settings-version' });
 		
 		const wrapper = containerEl.createDiv({ cls: 'storyscore-settings-wrapper' });
 		
@@ -107,7 +107,7 @@ export class SampleSettingTab extends PluginSettingTab {
 	}
 
 	renderHelpTab(container: HTMLElement) {
-		container.createEl('h3', { text: t('HELP_GUIDES') }).style.marginTop = '0';
+		container.createDiv({ cls: 'storyscore-settings-spacer' });
 		
 		const guides = [
 			{ title: t('HELP_GUIDE1_TITLE'), desc: t('HELP_GUIDE1_DESC') },
@@ -122,11 +122,11 @@ export class SampleSettingTab extends PluginSettingTab {
 			const summary = details.createEl('summary', { cls: 'storyscore-help-guide-summary' });
 			summary.setText(guide.title);
 			
-			const contentDiv = details.createEl('div', { cls: 'storyscore-help-guide-content' });
-			contentDiv.innerHTML = guide.desc;
+			const contentDiv = details.createDiv({ cls: 'storyscore-help-guide-content' });
+			contentDiv.appendChild(sanitizeHTMLToDom(guide.desc));
 		}
 		
-		container.createEl('h3', { text: t('HELP_SUPPORT'), cls: 'storyscore-help-header' });
+		container.createDiv({ cls: 'storyscore-settings-spacer' });
 		const s1 = new Setting(container)
 			.setName(t('HELP_SUPPORT_DEV'))
 			.setDesc(t('HELP_SUPPORT_DEV_DESC'))
@@ -138,12 +138,12 @@ export class SampleSettingTab extends PluginSettingTab {
 		s1.nameEl.prepend(i1);
 		s1.nameEl.addClass('storyscore-setting-name');
 			
-		container.createEl('h3', { text: t('HELP_ABOUT'), cls: 'storyscore-help-header' });
+		container.createDiv({ cls: 'storyscore-settings-spacer' });
 		const s2 = new Setting(container)
 			.setName(t('HELP_PLUGIN_INFO'))
 			.setDesc(t('HELP_PLUGIN_INFO_DESC'))
 			.addButton(btn => btn.setButtonText(t('HELP_GITHUB')).onClick(() => {
-				window.open("https://github.com/");
+				window.open("https://github.com/SrPernax/obsidian-storyscore");
 			}));
 		const i2 = s2.nameEl.createSpan({ cls: 'storyscore-help-icon' });
 		setIcon(i2, 'info');
@@ -154,7 +154,7 @@ export class SampleSettingTab extends PluginSettingTab {
 			.setName(t('HELP_CONTACT'))
 			.setDesc(t('HELP_CONTACT_DESC'))
 			.addButton(btn => btn.setButtonText(t('HELP_OPEN_ISSUE')).onClick(() => {
-				window.open("https://github.com/issues/new");
+				window.open("https://github.com/SrPernax/obsidian-storyscore/issues/new");
 			}));
 		const i3 = s3.nameEl.createSpan({ cls: 'storyscore-help-icon' });
 		setIcon(i3, 'bug');

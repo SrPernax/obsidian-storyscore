@@ -1,4 +1,4 @@
-import { App, Modal, Notice, Setting } from 'obsidian';
+import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
 import { getAudioFiles, getMarkdownFiles } from '../core/queries/file-queries';
 import { FilesSuggestModal } from '../core/utils/suggests';
 import { createLeitmotifFile } from '../core/commands/createleitmotif';
@@ -99,7 +99,7 @@ export class NewLeitmotifModal extends Modal {
 			customTypeSetting.settingEl.hide();
 		}
 
-		let noteInputComponent: any;
+		let noteInputComponent: TextComponent;
 		new Setting(contentEl)
 			.setName(t('LM_ENTITY_NOTE'))
 			.setDesc(t('LM_ENTITY_NOTE_DESC'))
@@ -118,7 +118,7 @@ export class NewLeitmotifModal extends Modal {
 				})
 			);
 
-		let audioInputComponent: any;
+		let audioInputComponent: TextComponent;
 		new Setting(contentEl)
 			.setName(t('LM_AUDIO'))
 			.setDesc(t('LM_AUDIO_DESC'))
@@ -142,7 +142,7 @@ export class NewLeitmotifModal extends Modal {
 			.setDesc(t('LM_TYPE_DESC'))
 			.addDropdown(dropdown => {
 				LM_TYPES.forEach(type => {
-					dropdown.addOption(type.id, t(type.labelKey as any));
+					dropdown.addOption(type.id, t(type.labelKey as Parameters<typeof t>[0]));
 				});
 				dropdown.setValue(this.motifType)
 				.onChange(value => {
@@ -187,6 +187,7 @@ export class NewLeitmotifModal extends Modal {
 						await createLeitmotifFile(this.app, leitmotifData, baseFolder);
 						this.close();
 					} catch (e) {
+						console.error(e);
 					}
 				})
 			);

@@ -1,5 +1,4 @@
 import {TFile} from "obsidian";
-
 export interface TrackResult {
 	file: TFile;
 	id: string;
@@ -10,3 +9,4 @@ export interface TrackResult {
 	type?: string;
 	status?: string;
 }
+

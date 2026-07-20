@@ -1,7 +1,7 @@
-import {App, Modal, Notice, Setting} from 'obsidian';
+import {App, Modal, Notice, Setting, TextComponent} from 'obsidian';
 import {createSoundtrackFile} from "../core/commands/createsoundtrack";
 import {FilesSuggestModal} from "../core/utils/suggests";
-import {getAudioFiles, getImageFiles} from "../core/queries/file-queries";
+import {getImageFiles} from "../core/queries/file-queries";
 import {t} from "../locales/lenguajes";
 import type StoryScorePlugin from "../main";
 
@@ -20,7 +20,7 @@ export class NewSoundtrackModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		let imageInputComponent: any;
+		let imageInputComponent: TextComponent;
 
 		const imageFiles = getImageFiles(this.app);
 
@@ -84,6 +84,7 @@ export class NewSoundtrackModal extends Modal {
 
 						this.close();
 					} catch (e) {
+						console.error(e);
 					}
 				}));
 	}

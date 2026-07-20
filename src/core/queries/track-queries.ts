@@ -11,13 +11,13 @@ export function getAllTracks(app: App, baseFolder: string): TrackResult[] {
 
 		return {
 			file: file,
-			id: frontmatter?.id || file.path,
-			title: frontmatter?.title || file.basename,
-			description: frontmatter?.description,
-			albumId: frontmatter?.album_id || "none",
-			audio: frontmatter?.audio,
-			type: frontmatter?.type || "Desconocido",
-			status: frontmatter?.status || "Sin estado"
+			id: (frontmatter?.id as string) || file.path,
+			title: (frontmatter?.title as string) || file.basename,
+			description: (frontmatter?.description as string),
+			albumId: (frontmatter?.album_id as string) || "none",
+			audio: (frontmatter?.audio as string),
+			type: (frontmatter?.type as string) || "Desconocido",
+			status: (frontmatter?.status as string) || "Sin estado"
 		};
 	}).sort((a, b) => a.title.localeCompare(b.title));
 }

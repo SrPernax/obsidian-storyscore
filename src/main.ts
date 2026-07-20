@@ -1,10 +1,10 @@
-import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf, Notice} from 'obsidian';
-import { DEFAULT_SETTINGS, MyPluginSettings, SampleSettingTab } from './settings';
+import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf} from 'obsidian';
+import { DEFAULT_SETTINGS, StoryScoreSettings, StoryScoreSettingTab } from './settings';
 import { NewTrackModal } from "./ui/add-track";
 import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/manager";
 import { NewSoundtrackModal } from "./ui/add-sountrack";
 import { TrackInsertModal } from "./core/commands/trackinsert";
-import {SoundtracksExist} from "./core/queries/soundtrack-queries";
+
 import {renderTrackCard} from "./ui/components/track-card";
 import {getTrackById} from "./core/queries/track-queries";
 import {getSoundtrackById} from "./core/queries/soundtrack-queries";
@@ -12,7 +12,7 @@ import { NewLeitmotifModal } from "./ui/add-leitmotif";
 import { t } from "./locales/lenguajes";
 
 export default class StoryScorePlugin extends Plugin {
-	settings!: MyPluginSettings;
+	settings!: StoryScoreSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -23,7 +23,7 @@ export default class StoryScorePlugin extends Plugin {
 		);
 
 		this.addRibbonIcon('library', t('CMD_OPEN_STORYSCORE'), () => {
-			this.activateView();
+			void this.activateView();
 		});
 
 		this.addRibbonIcon('disc', t('CMD_NEW_SOUNDTRACK'), (_evt: MouseEvent) => {
@@ -39,10 +39,10 @@ export default class StoryScorePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'open-storyscore-lobby',
+			id: 'open-lobby',
 			name: t('CMD_OPEN_MANAGER'),
 			callback: () => {
-				this.activateView();
+				void this.activateView();
 			},
 		});
 
@@ -71,7 +71,7 @@ export default class StoryScorePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'insert-storyscore-track',
+			id: 'insert-track',
 			name: t('CMD_INSERT_TRACK'),
 			
 			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
@@ -79,7 +79,7 @@ export default class StoryScorePlugin extends Plugin {
 			}
 		});
 		
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new StoryScoreSettingTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor("storyscore", (source, el, ctx) => {
 			let trackId = source.trim();
@@ -113,18 +113,18 @@ export default class StoryScorePlugin extends Plugin {
 			await leaf.setViewState({ type: VIEW_TYPE_STORYSCORE, active: true });
 		}
 
-		workspace.revealLeaf(leaf);
+		void workspace.revealLeaf(leaf);
 	}
 
 	onunload() {
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_STORYSCORE);
+		
 	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			(await this.loadData()) as Partial<MyPluginSettings>,
+			(await this.loadData()) as Partial<StoryScoreSettings>,
 		);
 	}
 

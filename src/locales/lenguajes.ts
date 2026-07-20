@@ -1,14 +1,15 @@
 import { en } from './en';
 import { es } from './es';
 
+import { moment } from 'obsidian';
 
 export function t(key: keyof typeof en, ...args: string[]): string {
-    const locale = (window as any).moment?.locale() || 'en';
+    const locale = moment.locale() || 'en';
     
     let translation = key as string;
 
     if (locale === 'es') {
-        translation = es[key as keyof typeof es] || en[key] || key;
+        translation = es[key] || en[key] || key;
     } else {
         translation = en[key] || key;
     }

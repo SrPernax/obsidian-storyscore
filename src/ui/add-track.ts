@@ -1,4 +1,4 @@
-import { App, Modal, Notice, Setting, TFile } from 'obsidian';
+import { App, Modal, Notice, Setting, TFile, TextComponent } from 'obsidian';
 import { getSoundtracks } from "../core/queries/soundtrack-queries";
 import { createTrackFile } from "../core/commands/createtrack";
 import { updateTrackFile } from "../core/commands/updatetrack";
@@ -36,14 +36,14 @@ export class NewTrackModal extends Modal {
 			const cache = this.app.metadataCache.getFileCache(this.existingFile);
 			const fm = cache?.frontmatter;
 			if (fm) {
-				this.trackTitle = fm.title || "";
-				this.trackDescription = fm.description || "";
-				this.trackType = fm.type || "ambient";
-				this.trackDiegesis = fm.diegetic || "n/a";
-				this.trackStatus = fm.status || "wip";
-				this.trackAudio = fm.audio?.replace(/^\[\[|\]\]$/g, '') || "";
-				this.selectedAlbumId = fm.album_id || "none";
-				this.associatedLeitmotifs = fm.leitmotifs?.map((l: string) => l.replace(/^\[\[|\]\]$/g, '')) || [];
+				this.trackTitle = (fm.title as string) || "";
+				this.trackDescription = (fm.description as string) || "";
+				this.trackType = (fm.type as string) || "ambient";
+				this.trackDiegesis = (fm.diegetic as string) || "n/a";
+				this.trackStatus = (fm.status as string) || "wip";
+				this.trackAudio = ((fm.audio as string) || "").replace(/^\[\[|\]\]$/g, '');
+				this.selectedAlbumId = (fm.album_id as string) || "none";
+				this.associatedLeitmotifs = (fm.leitmotifs as string[])?.map((l: string) => l.replace(/^\[\[|\]\]$/g, '')) || [];
 				
 				if (!['ambient', 'character', 'action', 'ui'].includes(this.trackType)) {
 					this.customTrackType = this.trackType;
@@ -75,9 +75,7 @@ export class NewTrackModal extends Modal {
 
 		contentEl.createEl('h2', { text: this.existingFile ? t('TRACK_EDIT_TITLE') : t('TRACK_ADD_TITLE') });
 		
-		const mainHeader = contentEl.createEl('h5', { text: t('TRACK_MAIN_SECTION') });
-		mainHeader.style.color = 'var(--text-muted)';
-		mainHeader.style.marginBottom = '10px';
+		contentEl.createEl('h5', { text: t('TRACK_MAIN_SECTION'), cls: 'storyscore-section-header' });
 
 		new Setting(contentEl)
 			.setName(t('TRACK_TITLE'))
@@ -99,7 +97,7 @@ export class NewTrackModal extends Modal {
 				});
 			});
 
-		let audioInputComponent: any;
+		let audioInputComponent: TextComponent;
 
 		new Setting(contentEl)
 			.setName(t('TRACK_AUDIO'))
@@ -139,16 +137,13 @@ export class NewTrackModal extends Modal {
 				});
 			});
 
-		const secondaryHeader = contentEl.createEl('h5', { text: t('TRACK_SECONDARY_SECTION') });
-		secondaryHeader.style.color = 'var(--text-muted)';
-		secondaryHeader.style.marginTop = '20px';
-		secondaryHeader.style.marginBottom = '10px';
+		contentEl.createEl('h5', { text: t('TRACK_SECONDARY_SECTION'), cls: 'storyscore-section-header-secondary' });
 
 		new Setting(contentEl)
 			.setName(t('TRACK_TYPE'))
 			.addDropdown(dropDown => {
 				TRACK_TYPES.forEach(type => {
-					dropDown.addOption(type.id, t(type.labelKey as any));
+					dropDown.addOption(type.id, t(type.labelKey as Parameters<typeof t>[0]));
 				});
 				dropDown.setValue(this.trackType)
 				.onChange((value) => {
@@ -194,7 +189,7 @@ export class NewTrackModal extends Modal {
 			.setName(t('TRACK_STATUS'))
 			.addDropdown(dropDown => {
 				TRACK_STATUSES.forEach(status => {
-					dropDown.addOption(status.id, t(status.labelKey as any));
+					dropDown.addOption(status.id, t(status.labelKey as Parameters<typeof t>[0]));
 				});
 				dropDown.setValue(this.trackStatus)
 				.onChange((value) => {
@@ -234,11 +229,7 @@ export class NewTrackModal extends Modal {
 				})
 			);
 
-		leitmotifContainer = contentEl.createEl('div');
-		leitmotifContainer.style.display = "flex";
-		leitmotifContainer.style.flexWrap = "wrap";
-		leitmotifContainer.style.gap = "5px";
-		leitmotifContainer.style.marginBottom = "15px";
+		leitmotifContainer = contentEl.createDiv({ cls: 'storyscore-leitmotif-container' });
 		this.renderLeitmotifs(leitmotifContainer);
 
 		new Setting(contentEl)
@@ -281,6 +272,7 @@ export class NewTrackModal extends Modal {
 
 						this.close();
 					} catch (e) {
+						console.error(e);
 					}
 				}));
 	}
@@ -293,26 +285,12 @@ export class NewTrackModal extends Modal {
 	renderLeitmotifs(container: HTMLElement) {
 		container.empty();
 		this.associatedLeitmotifs.forEach((lm, index) => {
-			const pill = container.createEl('span', { text: lm });
-			pill.style.backgroundColor = "var(--interactive-accent)";
-			pill.style.color = "var(--text-on-accent)";
-			pill.style.padding = "4px 10px";
-			pill.style.borderRadius = "12px";
-			pill.style.fontSize = "0.85em";
-			pill.style.display = "flex";
-			pill.style.alignItems = "center";
-			pill.style.gap = "6px";
-
-			const removeBtn = pill.createEl('span', { text: 'x' });
-			removeBtn.style.cursor = "pointer";
-			removeBtn.style.fontWeight = "bold";
-			removeBtn.style.opacity = "0.7";
+			const pill = container.createSpan({ text: lm, cls: 'storyscore-leitmotif-pill' });
+			const removeBtn = pill.createSpan({ text: 'X', cls: 'storyscore-leitmotif-pill-remove' });
 			removeBtn.onclick = () => {
 				this.associatedLeitmotifs.splice(index, 1);
 				this.renderLeitmotifs(container);
 			};
-			removeBtn.onmouseenter = () => removeBtn.style.opacity = "1";
-			removeBtn.onmouseleave = () => removeBtn.style.opacity = "0.7";
 		});
 	}
 }

@@ -10,9 +10,9 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 
 	container.empty();
 
-	const playerContainer = container.createEl("div", { cls: "resonance-inline-player storyscore-track-card" });
+	const playerContainer = container.createDiv({ cls: "resonance-inline-player storyscore-track-card" });
 
-	const cover = playerContainer.createEl("div", { cls: "storyscore-track-cover" });
+	const cover = playerContainer.createDiv({ cls: "storyscore-track-cover" });
 
 	let hasCover = false;
 	if (ost && ost.cover) {
@@ -25,7 +25,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 		if (imageFile) {
 			const imageUrl = app.vault.getResourcePath(imageFile);
 			cover.style.backgroundImage = `url("${imageUrl}")`;
-			cover.style.backgroundColor = "transparent";
+			cover.addClass("storyscore-track-cover-transparent");
 			hasCover = true;
 		}
 	}
@@ -33,16 +33,15 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	if (!hasCover) {
 		const defaultLogoPath = app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/ns-logo.png`);
 		cover.style.backgroundImage = `url("${defaultLogoPath}")`;
-		cover.style.backgroundColor = "transparent";
-		cover.style.objectFit = "contain";
+		cover.addClass("storyscore-track-cover-default");
 	}
 
-	const infoDiv = playerContainer.createEl("div", { cls: "storyscore-track-info" });
+	const infoDiv = playerContainer.createDiv({ cls: "storyscore-track-info" });
 
-	infoDiv.createEl("h4", { text: track.title, cls: "resonance-track-title" }).style.margin = "0";
+	infoDiv.createEl("h4", { text: track.title, cls: "resonance-track-title storyscore-track-info-title" });
 	
 	if (track.description) {
-		const descEl = infoDiv.createEl("span", { cls: "storyscore-track-desc" });
+		const descEl = infoDiv.createSpan({ cls: "storyscore-track-desc" });
 
 		const parts = track.description.split(/(\[\[.*?\]\])/g);
 		parts.forEach(part => {
@@ -53,10 +52,10 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 				const linkAlias = split[1] || linkPath;
 
 				const linkEl = descEl.createEl("a", { text: linkAlias, cls: "internal-link" });
-				linkEl.style.cursor = "pointer";
+				linkEl.addClass("storyscore-track-link-icon");
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					app.workspace.openLinkText(linkPath, track.file.path, false);
+					void app.workspace.openLinkText(linkPath, track.file.path, false);
 				};
 			} else if (part.length > 0) {
 				descEl.appendChild(document.createTextNode(part));
@@ -66,11 +65,13 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	
 	const typeObj = TRACK_TYPES.find(t => t.id === track.type);
 	let typeStr = track.type;
-	if (typeObj) typeStr = t(typeObj.labelKey as any);
+	// @ts-ignore
+	if (typeObj) typeStr = t(typeObj.labelKey as unknown);
 
 	const statusObj = TRACK_STATUSES.find(s => s.id === track.status);
 	let statusStr = track.status;
-	if (statusObj) statusStr = t(statusObj.labelKey as any);
+	// @ts-ignore
+	if (statusObj) statusStr = t(statusObj.labelKey as unknown);
 
 	const ostTitle = ost ? ost.title : t('CARD_NO_ALBUM');
 	const trackType = typeStr ? (typeStr.charAt(0).toUpperCase() + typeStr.slice(1)) : "";
@@ -80,10 +81,10 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	if (trackType && trackType !== t('CARD_UNKNOWN_TYPE') && trackType !== "Desconocido") subtitleText += ` • ${trackType}`;
 	if (trackStatus && trackStatus !== t('CARD_NO_STATUS') && trackStatus !== "Sin estado") subtitleText += ` • ${trackStatus}`;
 	
-	infoDiv.createEl("span", { text: subtitleText, cls: "storyscore-track-subtitle" });
+	infoDiv.createSpan({ text: subtitleText, cls: "storyscore-track-subtitle" });
 	infoDiv.createEl("small", { text: `ID: ${track.id}`, cls: "storyscore-track-id" });
 
-	const rightControls = playerContainer.createEl("div", { cls: "storyscore-track-controls" });
+	const rightControls = playerContainer.createDiv({ cls: "storyscore-track-controls" });
 	const audioElement = rightControls.createEl("audio", { cls: "storyscore-track-audio" });
 	audioElement.setAttribute("controls", "true");
 
@@ -99,7 +100,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 		}
 	}
 
-	const buttonsBox = rightControls.createEl("div", { cls: "storyscore-track-buttons" });
+	const buttonsBox = rightControls.createDiv({ cls: "storyscore-track-buttons" });
 	
 	const btnEdit = buttonsBox.createEl("button", { text: t('CARD_EDIT'), cls: "storyscore-track-btn" });
 	btnEdit.onclick = () => {
@@ -112,14 +113,14 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 		modal.titleEl.setText(t('CARD_DELETE_TITLE'));
 		modal.contentEl.createEl("p", { text: t('CARD_DELETE_CONFIRM', track.title) });
 		
-		const btnContainer = modal.contentEl.createEl("div", { cls: "storyscore-modal-buttons" });
+		const btnContainer = modal.contentEl.createDiv({ cls: "storyscore-modal-buttons" });
 		
 		const cancelBtn = btnContainer.createEl("button", { text: t('CANCEL') });
 		cancelBtn.onclick = () => modal.close();
 		
 		const confirmBtn = btnContainer.createEl("button", { text: t('DELETE'), cls: "mod-warning" });
 		confirmBtn.onclick = async () => {
-			await app.vault.trash(track.file, true);
+			await app.fileManager.trashFile(track.file);
 			new Notice(t('CARD_DELETED_NOTICE', track.title));
 			modal.close();
 		};

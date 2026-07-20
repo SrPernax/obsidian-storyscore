@@ -8,13 +8,14 @@ export function getSoundtracks(app: App, baseFolder: string): SoundtrackResult[]
 
 	return soundtrackFiles.map((file: TFile) => {
 		const cache = app.metadataCache.getFileCache(file);
-		const frontmatterId = cache?.frontmatter?.id || file.path;
+		const fm = cache?.frontmatter;
+		const frontmatterId = (fm?.id as string) || file.path;
 
 		return {
 			file: file,
 			id: frontmatterId,
-			title: cache?.frontmatter?.title || file.basename,
-			cover: cache?.frontmatter?.cover
+			title: (fm?.title as string) || file.basename,
+			cover: fm?.cover as string | undefined
 		};
 	});
 }
