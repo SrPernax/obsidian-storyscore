@@ -6,6 +6,9 @@ import { t } from '../../locales/lenguajes';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/utils/constants';
 import type StoryScorePlugin from '../../main';
 
+// @ts-ignore
+import NsLogo from '../../../assets/plugin/ns-logo.svg';
+
 export function renderTrackCard(container: HTMLElement, track: TrackResult, ost: SoundtrackResult | undefined, app: App, plugin: StoryScorePlugin) {
 
 	container.empty();
@@ -31,8 +34,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	}
 	
 	if (!hasCover) {
-		const defaultLogoPath = app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/ns-logo.png`);
-		cover.style.backgroundImage = `url("${defaultLogoPath}")`;
+		cover.style.backgroundImage = `url('${NsLogo}')`;
 		cover.addClass("storyscore-track-cover-default");
 	}
 

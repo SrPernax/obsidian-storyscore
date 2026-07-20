@@ -2,6 +2,11 @@ import { ItemView, WorkspaceLeaf, debounce } from 'obsidian';
 import { NewSoundtrackModal } from "./add-sountrack";
 import { NewTrackModal } from "./add-track";
 import { NewLeitmotifModal } from "./add-leitmotif";
+
+// @ts-ignore
+import LogoBlack from '../../assets/plugin/logo-black.svg';
+// @ts-ignore
+import LogoWhite from '../../assets/plugin/logo-white.svg';
 import { renderTrackCard } from "./components/track-card";
 import { getSoundtracks } from "../core/queries/soundtrack-queries";
 import { getAllTracks } from "../core/queries/track-queries";
@@ -70,11 +75,10 @@ export class StoryScoreView extends ItemView {
 		const titleBox = staffBox.createDiv({ cls: 'storyscore-title-box' });
 		if (compactMode) titleBox.addClass('compact');
 
-		const logoFilename = isDarkTheme ? 'logo-white.png' : 'logo-black.png';
-		const logoPath = this.app.vault.adapter.getResourcePath(`.obsidian/plugins/storyscore/assets/plugin/${logoFilename}`);
+		const logoData = isDarkTheme ? LogoWhite : LogoBlack;
 		
 		const logo = titleBox.createEl('img', { cls: 'storyscore-logo' });
-		logo.src = logoPath;
+		logo.src = logoData;
 		if (compactMode) logo.addClass('compact');
 
 		const textContainer = titleBox.createDiv({ cls: 'storyscore-text-container' });
@@ -83,7 +87,7 @@ export class StoryScoreView extends ItemView {
 		const title = textContainer.createEl('h2', { text: t('MANAGER_TITLE'), cls: 'storyscore-title' });
 		if (compactMode) title.addClass('compact');
 
-		const version = textContainer.createSpan({ text: 'v1.0.0', cls: 'storyscore-version' });
+		const version = textContainer.createSpan({ text: `v${this.plugin.manifest.version}`, cls: 'storyscore-version' });
 		if (compactMode) version.addClass('compact');
 
 		if (!compactMode) {
