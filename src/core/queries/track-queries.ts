@@ -17,7 +17,10 @@ export function getAllTracks(app: App, baseFolder: string): TrackResult[] {
 			albumId: (frontmatter?.album_id as string) || "none",
 			audio: (frontmatter?.audio as string),
 			type: (frontmatter?.type as string) || "Desconocido",
-			status: (frontmatter?.status as string) || "Sin estado"
+			status: (frontmatter?.status as string) || "Sin estado",
+			lyrics: (frontmatter?.lyrics as string),
+			diegesis: (frontmatter?.diegetic as string),
+			leitmotifs: (frontmatter?.leitmotifs as string[]) || []
 		};
 	}).sort((a, b) => a.title.localeCompare(b.title));
 }

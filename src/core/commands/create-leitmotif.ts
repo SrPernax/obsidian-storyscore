@@ -23,16 +23,18 @@ id: ${uniqueId}
 title: "${data.title}"
 description: "${data.description}"
 entity_type: "${data.entityType}"
-entity_note: ${entityNoteLink}
+${data.entityType === 'custom' && data.customEntityType ? `custom_entity_type: "${data.customEntityType}"\n` : ''}entity_note: ${entityNoteLink}
 motif_type: "${data.motifType}"
 audio: ${audioLink}
+color: "${data.color}"
+musical_annotations: ${JSON.stringify(data.musicalAnnotations || "")}
 ---
                    
 # 🎵 Leitmotif: ${data.title}
                    
 > ${data.description || 'No narrative description.'}
                    
-**Associated Entity:** ${data.entityType} ${data.entityNote ? `([[${data.entityNote}]])` : ''}
+**Associated Entity:** ${data.entityType === 'custom' && data.customEntityType ? data.customEntityType : data.entityType} ${data.entityNote ? `([[${data.entityNote}]])` : ''}
 **Motif Type:** ${data.motifType}
 
 ### Player

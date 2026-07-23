@@ -1,12 +1,12 @@
 import { App, Modal, Notice, Setting, TFile, TextComponent } from 'obsidian';
-import { getSoundtracks } from "../core/queries/soundtrack-queries";
-import { createTrackFile } from "../core/commands/createtrack";
-import { updateTrackFile } from "../core/commands/updatetrack";
-import { getAudioFiles, getLeitmotifFiles } from "../core/queries/file-queries";
-import {FilesSuggestModal} from "../core/utils/suggests";
-import { t } from "../locales/lenguajes";
-import { TRACK_TYPES, TRACK_STATUSES } from "../core/utils/constants";
-import type StoryScorePlugin from "../main";
+import { getSoundtracks } from "../../core/queries/soundtrack-queries";
+import { createTrackFile } from "../../core/commands/create-track";
+import { updateTrackFile } from "../../core/commands/update-track";
+import { getAudioFiles, getLeitmotifFiles } from "../../core/queries/file-queries";
+import {FilesSuggestModal} from "../../core/utils/suggests";
+import { t } from "../../locales/lenguajes";
+import { TRACK_TYPES, TRACK_STATUSES } from "../../core/utils/constants";
+import type StoryScorePlugin from "../../main";
 
 export class NewTrackModal extends Modal {
 	trackTitle: string;
@@ -14,7 +14,7 @@ export class NewTrackModal extends Modal {
 	trackType: string = "ambient";
 	trackLyrics: string = "";
 	trackStatus: string = "wip";
-	trackDiegesis: string = "n/a";
+	trackDiegesis: string = "N/A";
 	customTrackType: string = "";
 	selectedAlbumId: string = "none";
 
@@ -39,10 +39,15 @@ export class NewTrackModal extends Modal {
 				this.trackTitle = (fm.title as string) || "";
 				this.trackDescription = (fm.description as string) || "";
 				this.trackType = (fm.type as string) || "ambient";
-				this.trackDiegesis = (fm.diegetic as string) || "n/a";
+				let initDieg = (fm.diegetic as string) || "N/A";
+				if (initDieg === "diegetic" || initDieg === "in") initDieg = "Diegético";
+				if (initDieg === "non-diegetic" || initDieg === "out") initDieg = "Extradiegético";
+				if (initDieg === "n/a" || initDieg === "mixed") initDieg = "N/A";
+				this.trackDiegesis = initDieg;
 				this.trackStatus = (fm.status as string) || "wip";
 				this.trackAudio = ((fm.audio as string) || "").replace(/^\[\[|\]\]$/g, '');
 				this.selectedAlbumId = (fm.album_id as string) || "none";
+				this.trackLyrics = (fm.lyrics as string) || "";
 				this.associatedLeitmotifs = (fm.leitmotifs as string[])?.map((l: string) => l.replace(/^\[\[|\]\]$/g, '')) || [];
 				
 				if (!['ambient', 'character', 'action', 'ui'].includes(this.trackType)) {
@@ -81,6 +86,7 @@ export class NewTrackModal extends Modal {
 			.setName(t('TRACK_TITLE'))
 			.addText(text => {
 				text.setPlaceholder(t('TRACK_TITLE_PLACEHOLDER'));
+				text.inputEl.maxLength = 80;
 				text.setValue(this.trackTitle);
 				text.onChange((value) => {
 					this.trackTitle = value;
@@ -91,6 +97,7 @@ export class NewTrackModal extends Modal {
 			.setName(t('TRACK_DESC'))
 			.addText(text => {
 				text.setPlaceholder(t('TRACK_DESC_PLACEHOLDER'));
+				text.inputEl.maxLength = 200;
 				text.setValue(this.trackDescription);
 				text.onChange((value) => {
 					this.trackDescription = value;
@@ -171,19 +178,18 @@ export class NewTrackModal extends Modal {
 			customTypeSetting.settingEl.hide();
 		}
 
-		if (!this.existingFile) {
-			new Setting(contentEl)
-				.setName(t('TRACK_LYRICS'))
-				.setDesc(t('TRACK_LYRICS_DESC'))
-				.addTextArea(textArea => {
-					textArea.setPlaceholder(t('TRACK_LYRICS_PLACEHOLDER'));
-					textArea.inputEl.rows = 6;
-					textArea.inputEl.cols = 30;
-					textArea.onChange((value) => {
-						this.trackLyrics = value;
-					});
+		new Setting(contentEl)
+			.setName(t('TRACK_LYRICS'))
+			.setDesc(t('TRACK_LYRICS_DESC'))
+			.addTextArea(textArea => {
+				textArea.setPlaceholder(t('TRACK_LYRICS_PLACEHOLDER'));
+				textArea.inputEl.rows = 6;
+				textArea.inputEl.cols = 30;
+				if (this.trackLyrics) textArea.setValue(this.trackLyrics);
+				textArea.onChange((value) => {
+					this.trackLyrics = value;
 				});
-		}
+			});
 
 		new Setting(contentEl)
 			.setName(t('TRACK_STATUS'))
@@ -201,9 +207,9 @@ export class NewTrackModal extends Modal {
 			.setName(t('TRACK_DIEGESIS'))
 			.setDesc(t('TRACK_DIEGESIS_DESC'))
 			.addDropdown(dropDown => dropDown
-				.addOption('diegetic', t('TRACK_DIEGESIS_IN'))
-				.addOption('non-diegetic', t('TRACK_DIEGESIS_OUT'))
-				.addOption('n/a', t('TRACK_DIEGESIS_MIXED'))
+				.addOption('Diegético', t('TRACK_DIEGESIS_IN'))
+				.addOption('Extradiegético', t('TRACK_DIEGESIS_OUT'))
+				.addOption('N/A', t('TRACK_DIEGESIS_MIXED'))
 				.setValue(this.trackDiegesis)
 				.onChange((value) => {
 					this.trackDiegesis = value;

@@ -28,6 +28,7 @@ description: "${data.description}"
 type: "${data.type}"
 diegetic: "${data.diegetic}"
 status: "${data.status}"
+lyrics: ${JSON.stringify(data.lyrics || '')}
 audio: "[[${data.audio}]]"${leitmotifsYaml}
 ---
                    

@@ -1,10 +1,11 @@
-import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
-import { getAudioFiles, getMarkdownFiles } from '../core/queries/file-queries';
-import { FilesSuggestModal } from '../core/utils/suggests';
-import { createLeitmotifFile } from '../core/commands/createleitmotif';
-import { t } from '../locales/lenguajes';
-import { LM_TYPES } from '../core/utils/constants';
-import type StoryScorePlugin from '../main';
+import { App, Modal, Notice, Setting, TextComponent, TFile } from 'obsidian';
+import { getAudioFiles, getMarkdownFiles } from '../../core/queries/file-queries';
+import { FilesSuggestModal } from '../../core/utils/suggests';
+import { createLeitmotifFile } from '../../core/commands/create-leitmotif';
+import { updateLeitmotifFile } from '../../core/commands/update-leitmotif';
+import { t } from '../../locales/lenguajes';
+import { LM_TYPES } from '../../core/utils/constants';
+import type StoryScorePlugin from '../../main';
 
 export class NewLeitmotifModal extends Modal {
 	motifTitle: string = "";
@@ -13,14 +14,41 @@ export class NewLeitmotifModal extends Modal {
 	entityNote: string = "";
 	motifAudio: string = "";
 	motifType: string = "Melodic motif";
-	customTrackType: string = "";
+	customEntityType: string = "";
 	musicalAnnotations: string = "";
+	motifColor: string = "#808080";
 
-	constructor(app: App, public plugin: StoryScorePlugin) {
+	constructor(app: App, public fileToEdit: TFile | null = null, public plugin: StoryScorePlugin) {
 		super(app);
 	}
 
 	onOpen() {
+		if (this.fileToEdit) {
+			const cache = this.app.metadataCache.getFileCache(this.fileToEdit);
+			const fm = cache?.frontmatter;
+			if (fm) {
+				this.motifTitle = (fm.title as string) || this.fileToEdit.basename;
+				this.motifDescription = (fm.description as string) || "";
+				this.entityType = (fm.entity_type as string) || "Character";
+				this.motifType = (fm.motif_type as string) || "Melodic motif";
+				
+				let entityNoteStr = fm.entity_note as string;
+				if (entityNoteStr && entityNoteStr.startsWith("[[") && entityNoteStr.endsWith("]]")) {
+					entityNoteStr = entityNoteStr.substring(2, entityNoteStr.length - 2);
+				}
+				this.entityNote = entityNoteStr || "";
+				
+				let audioStr = fm.audio as string;
+				if (audioStr && audioStr.startsWith("[[") && audioStr.endsWith("]]")) {
+					audioStr = audioStr.substring(2, audioStr.length - 2);
+				}
+				this.motifAudio = audioStr || "";
+                this.musicalAnnotations = (fm.musical_annotations as string) || "";
+                this.customEntityType = (fm.custom_entity_type as string) || "";
+                this.motifColor = (fm.color as string) || "#808080";
+			}
+		}
+
 		const { contentEl } = this;
 		contentEl.empty();
 
@@ -39,12 +67,13 @@ export class NewLeitmotifModal extends Modal {
 			return;
 		}
 
-		contentEl.createEl('h2', { text: t('LM_ADD_TITLE') });
+		contentEl.createEl('h2', { text: this.fileToEdit ? t('LM_EDIT_TITLE') : t('LM_ADD_TITLE') });
 
 		new Setting(contentEl)
 			.setName(t('LM_NAME'))
 			.setDesc(t('LM_NAME_DESC'))
 			.addText(text => text
+				.setValue(this.motifTitle)
 				.setPlaceholder(t('LM_NAME_PLACEHOLDER'))
 				.onChange((value) => {
 					this.motifTitle = value;
@@ -54,6 +83,7 @@ export class NewLeitmotifModal extends Modal {
 			.setName(t('LM_DESC'))
 			.setDesc(t('LM_DESC_DESC'))
 			.addTextArea(textArea => {
+				textArea.setValue(this.motifDescription);
 				textArea.setPlaceholder(t('LM_DESC_PLACEHOLDER'));
 				textArea.inputEl.rows = 4;
 				textArea.inputEl.cols = 30;
@@ -63,7 +93,7 @@ export class NewLeitmotifModal extends Modal {
 			});
 
 		new Setting(contentEl)
-			.setName(t('LM_ENTITY'))
+			.setName(t('LM_ENTITY_TYPE'))
 			.setDesc(t('LM_ENTITY_DESC'))
 			.addDropdown(dropdown => dropdown
 				.addOption('Character', t('LM_ENTITY_CHAR'))
@@ -73,7 +103,7 @@ export class NewLeitmotifModal extends Modal {
 				.addOption('Feeling', t('LM_ENTITY_FEELING'))
 				.addOption('Memory', t('LM_ENTITY_MEMORY'))
 				.addOption('custom', t("LM_ENTITY_CUSTOM"))
-				.setValue('Character')
+				.setValue(this.entityType)
 				.onChange(value => {
 					this.entityType = value;
 					if (value === 'custom') {
@@ -89,9 +119,9 @@ export class NewLeitmotifModal extends Modal {
 			.setDesc(t('LM_ENTITY_CUSTOM_DESC'))
 			.addText(text => {
 				text.setPlaceholder(t('LM_ENTITY_CUSTOM_PLACEHOLDER'));
-				if (this.customTrackType) text.setValue(this.customTrackType);
+				if (this.customEntityType) text.setValue(this.customEntityType);
 				text.onChange((value) => {
-					this.customTrackType = value;
+					this.customEntityType = value;
 				});
 			});
 
@@ -105,6 +135,7 @@ export class NewLeitmotifModal extends Modal {
 			.setDesc(t('LM_ENTITY_NOTE_DESC'))
 			.addText(text => {
 				noteInputComponent = text;
+				text.setValue(this.entityNote);
 				text.setPlaceholder(t('LM_ENTITY_NOTE_PLACEHOLDER'));
 				text.setDisabled(true);
 			})
@@ -124,6 +155,7 @@ export class NewLeitmotifModal extends Modal {
 			.setDesc(t('LM_AUDIO_DESC'))
 			.addText(text => {
 				audioInputComponent = text;
+				text.setValue(this.motifAudio);
 				text.setPlaceholder(t('LM_AUDIO_PLACEHOLDER'));
 				text.setDisabled(true);
 			})
@@ -154,6 +186,7 @@ export class NewLeitmotifModal extends Modal {
 			.setName(t('LM_NOTES'))
 			.setDesc(t('LM_NOTES_DESC'))
 			.addTextArea(textArea => {
+				textArea.setValue(this.musicalAnnotations);
 				textArea.setPlaceholder(t('LM_NOTES_PLACEHOLDER'));
 				textArea.inputEl.rows = 4;
 				textArea.inputEl.cols = 30;
@@ -161,6 +194,16 @@ export class NewLeitmotifModal extends Modal {
 					this.musicalAnnotations = value;
 				});
 			});
+
+		new Setting(contentEl)
+			.setName(t('LM_COLOR'))
+			.setDesc(t('LM_COLOR_DESC'))
+			.addColorPicker(color => color
+				.setValue(this.motifColor)
+				.onChange(value => {
+					this.motifColor = value;
+				})
+			);
 
 		new Setting(contentEl)
 			.addButton(btn => btn
@@ -179,12 +222,18 @@ export class NewLeitmotifModal extends Modal {
 						entityNote: this.entityNote,
 						audio: this.motifAudio,
 						motifType: this.motifType,
-						musicalAnnotations: this.musicalAnnotations
+						musicalAnnotations: this.musicalAnnotations,
+						customEntityType: this.customEntityType,
+						color: this.motifColor
 					};
 
 					try {
-						const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
-						await createLeitmotifFile(this.app, leitmotifData, baseFolder);
+                        if (this.fileToEdit) {
+                            await updateLeitmotifFile(this.app, this.fileToEdit, leitmotifData);
+                        } else {
+                            const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
+                            await createLeitmotifFile(this.app, leitmotifData, baseFolder);
+                        }
 						this.close();
 					} catch (e) {
 						console.error(e);

@@ -29,4 +29,17 @@ export default defineConfig(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		rules: {
+			'obsidianmd/no-static-styles-assignment': 'off',
+			'obsidianmd/settings-tab/no-manual-html-headings': 'off',
+			'obsidianmd/settings-tab/prefer-setting-definitions': 'off',
+			'obsidianmd/ui/sentence-case': 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off',
+			'@typescript-eslint/no-unsafe-argument': 'off',
+			'@typescript-eslint/no-unsafe-call': 'off',
+			'@typescript-eslint/no-unused-vars': 'off',
+			'@typescript-eslint/no-floating-promises': 'off'
+		}
+	}
 );

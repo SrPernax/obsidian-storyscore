@@ -15,6 +15,7 @@ export function getSoundtracks(app: App, baseFolder: string): SoundtrackResult[]
 			file: file,
 			id: frontmatterId,
 			title: (fm?.title as string) || file.basename,
+			description: fm?.description as string | undefined,
 			cover: fm?.cover as string | undefined
 		};
 	});

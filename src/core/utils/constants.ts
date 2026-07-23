@@ -21,3 +21,9 @@ export const LM_TYPES = [
 	{ id: 'Timbral motif', labelKey: 'LM_TYPE_TIMBRE' },
 	{ id: 'Harmonic motif', labelKey: 'LM_TYPE_HARMONY' }
 ];
+
+export const DIEGESIS_TYPES = [
+	{ id: 'in', labelKey: 'TRACK_DIEGESIS_IN' },
+	{ id: 'out', labelKey: 'TRACK_DIEGESIS_OUT' },
+	{ id: 'mixed', labelKey: 'TRACK_DIEGESIS_MIXED' }
+];
