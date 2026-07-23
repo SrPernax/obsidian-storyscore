@@ -35,13 +35,18 @@ Easily create tracks and leitmotifs, assign statuses and types, and link audio f
 
 ### Embedded Cards (Codeblocks)
 
-Insert tracks directly into the flow of your text. Open the **Command Palette** while on the desired note and use the *Insert track player here* command. If you prefer to do it manually, create a codeblock like this:
+Insert track, soundtrack, or leitmotif cards directly into the flow of your text. Open the **Command Palette** while on the desired note and use the *Insert track player here* command. If you prefer to do it manually, create a codeblock like this:
 
 ````markdown
 ```storyscore
-id: SS-rnf8e # (Example track ID)
+id: SS-rnf8e
 ```
 ````
+
+You can insert 3 types of cards depending on the ID prefix you use:
+- `SS-`: To insert a **Track** card.
+- `ST-`: To insert a **Soundtrack** (Album) card.
+- `LM-`: To insert a **Leitmotif** card.
 
 This will give your notes a much more immersive musical and narrative dimension, allowing you to play the exact music for a scene, character, or event without leaving the text.
 <div align="center">
@@ -67,15 +72,6 @@ StoryScore's development has just begun. Future updates plan to build comprehens
 Currently, StoryScore supports the following languages:
 - 🇬🇧 **English**
 - 🇪🇸 **Spanish**
-
-Since music is a universal language, any help to bring StoryScore to more languages is highly appreciated!
-
-If you want to contribute a translation:
-1. **Fork** this repository.
-2. Create a new language file inside the `src/locales/` folder (you can use `en.ts` as a template).
-3. Submit a **Pull Request (PR)** with your translated file.
-
-Your translation will be included in the next release, and you will be fully credited for your contribution!
 
 ## Support Me
 If you find this plugin useful for your projects and want to support its development, consider buying me a coffee!  :]
@@ -109,3 +105,18 @@ Check out my other plugins for Obsidian:
 <div align="center">
   Thanks for using <b>StoryScore</b>
 </div>
+
+
+FEATURES
+
+Manager Update: The main Manager now has tabs to navigate between Tracks, Soundtracks, and Leitmotifs.
+New Info Panels: Soundtracks and Leitmotifs now have their own Information Modals to manage all their data in one place (similar to Tracks).
+Codeblock Expansion: You can now insert Soundtrack (ST-) and Leitmotif (LM-) cards directly into your notes using the storyscore codeblock.
+News Tab: Added a new 'News' tab in the plugin settings to see the latest updates.
+Mobile Support: Filter buttons in the Manager are now horizontally scrollable to prevent UI issues on mobile devices.
+FIXES
+
+Fixed a critical bug that prevented saving or updating track lyrics from the information panel.
+Fixed an issue where "custom" entity types in Leitmotifs were not being saved correctly in the file.
+Fixed Diegesis translations for Spanish users ("Diegético" / "Extradiegético"), with backwards compatibility for older files.
+Cleaned up strict styling warnings and minor code issues.
