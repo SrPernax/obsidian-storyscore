@@ -50,7 +50,7 @@ export class LeitmotifInfoModal extends Modal {
 				entityP.createEl("a", { text: noteName, cls: "internal-link" }, (link) => {
 					link.onclick = (e) => {
 						e.preventDefault();
-						this.app.workspace.openLinkText(noteName, this.lm.file.path, true);
+						void this.app.workspace.openLinkText(noteName, this.lm.file.path, true);
 						this.close();
 					};
 				});
