@@ -107,16 +107,3 @@ Check out my other plugins for Obsidian:
 </div>
 
 
-FEATURES
-
-Manager Update: The main Manager now has tabs to navigate between Tracks, Soundtracks, and Leitmotifs.
-New Info Panels: Soundtracks and Leitmotifs now have their own Information Modals to manage all their data in one place (similar to Tracks).
-Codeblock Expansion: You can now insert Soundtrack (ST-) and Leitmotif (LM-) cards directly into your notes using the storyscore codeblock.
-News Tab: Added a new 'News' tab in the plugin settings to see the latest updates.
-Mobile Support: Filter buttons in the Manager are now horizontally scrollable to prevent UI issues on mobile devices.
-FIXES
-
-Fixed a critical bug that prevented saving or updating track lyrics from the information panel.
-Fixed an issue where "custom" entity types in Leitmotifs were not being saved correctly in the file.
-Fixed Diegesis translations for Spanish users ("Diegético" / "Extradiegético"), with backwards compatibility for older files.
-Cleaned up strict styling warnings and minor code issues.
