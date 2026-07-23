@@ -1,13 +1,13 @@
 import { ItemView, WorkspaceLeaf, debounce } from 'obsidian';
-import { NewSoundtrackModal } from "./add-sountrack";
-import { NewTrackModal } from "./add-track";
-import { NewLeitmotifModal } from "./add-leitmotif";
+import { NewSoundtrackModal } from "./creators/add-sountrack";
+import { NewTrackModal } from "./creators/add-track";
+import { NewLeitmotifModal } from "./creators/add-leitmotif";
 
 import LogoBlack from '../../assets/plugin/logo-black.svg';
 import LogoWhite from '../../assets/plugin/logo-white.svg';
-import { renderTrackCard } from "./components/track-card";
-import { getSoundtracks } from "../core/queries/soundtrack-queries";
-import { getAllTracks } from "../core/queries/track-queries";
+import { renderTrackList } from "./lists/track-list";
+import { renderSoundtrackList } from "./lists/soundtrack-list";
+import { renderLeitmotifList } from "./lists/leitmotif-list";
 import { t } from "../locales/lenguajes";
 import type StoryScorePlugin from '../main';
 
@@ -15,6 +15,7 @@ export const VIEW_TYPE_STORYSCORE = "storyscore-view";
 
 export class StoryScoreView extends ItemView {
 	currentAlbumFilter: string = "all";
+	currentTab: 'soundtracks' | 'tracks' | 'leitmotifs' = 'tracks';
 	plugin: StoryScorePlugin;
 
 	debouncedRender = debounce(() => {
@@ -57,7 +58,36 @@ export class StoryScoreView extends ItemView {
 
 		this.renderHeader(container, compactMode, isDarkTheme);
 		this.renderToolbar(container);
-		this.renderTrackList(container, baseFolder);
+		this.renderTabs(container);
+
+		const listContainer = container.createDiv({ cls: 'storyscore-list-wrapper' });
+
+		if (this.currentTab === 'soundtracks') {
+			renderSoundtrackList(listContainer, this.app, this.plugin);
+		} else if (this.currentTab === 'tracks') {
+			renderTrackList(listContainer, this.app, this.plugin, this.currentAlbumFilter, (val) => {
+				this.currentAlbumFilter = val;
+				void this.renderView();
+			});
+		} else if (this.currentTab === 'leitmotifs') {
+			renderLeitmotifList(listContainer, this.app, this.plugin);
+		}
+	}
+
+	renderTabs(container: HTMLElement) {
+		const tabsBox = container.createDiv({ cls: 'storyscore-tabs-container' });
+		
+		const btnSoundtracks = tabsBox.createEl('button', { text: "Soundtracks", cls: 'storyscore-tab-btn' });
+		const btnTracks = tabsBox.createEl('button', { text: "Tracks", cls: 'storyscore-tab-btn' });
+		const btnLeitmotifs = tabsBox.createEl('button', { text: "Leitmotifs", cls: 'storyscore-tab-btn' });
+
+		if (this.currentTab === 'soundtracks') btnSoundtracks.addClass('active');
+		if (this.currentTab === 'tracks') btnTracks.addClass('active');
+		if (this.currentTab === 'leitmotifs') btnLeitmotifs.addClass('active');
+
+		btnSoundtracks.onclick = () => { this.currentTab = 'soundtracks'; void this.renderView(); };
+		btnTracks.onclick = () => { this.currentTab = 'tracks'; void this.renderView(); };
+		btnLeitmotifs.onclick = () => { this.currentTab = 'leitmotifs'; void this.renderView(); };
 	}
 
 	renderHeader(container: HTMLElement, compactMode: boolean, isDarkTheme: boolean) {
@@ -73,7 +103,7 @@ export class StoryScoreView extends ItemView {
 		const titleBox = staffBox.createDiv({ cls: 'storyscore-title-box' });
 		if (compactMode) titleBox.addClass('compact');
 
-		const logoData = isDarkTheme ? LogoWhite : LogoBlack;
+		const logoData = "data:image/svg+xml;base64," + (isDarkTheme ? LogoWhite : LogoBlack);
 		
 		const logo = titleBox.createEl('img', { cls: 'storyscore-logo' });
 		logo.src = logoData;
@@ -119,51 +149,13 @@ export class StoryScoreView extends ItemView {
 		btnRefreshAll.onclick = () => this.renderView();
 
 		const btnAddProject = createColoredButton(hBox, t('MANAGER_ADD_SOUNDTRACK'));
-		btnAddProject.onclick = () => { new NewSoundtrackModal(this.app, this.plugin).open(); };
+		btnAddProject.onclick = () => { new NewSoundtrackModal(this.app, null, this.plugin).open(); };
 
 		const btnAddTrack = createColoredButton(hBox, t('MANAGER_ADD_TRACK'));
 		btnAddTrack.onclick = () => { new NewTrackModal(this.app, undefined, this.plugin).open(); };
 
 		const btnAddLeitmotif = createColoredButton(hBox, t('MANAGER_ADD_LEITMOTIF'));
-		btnAddLeitmotif.onclick = () => { new NewLeitmotifModal(this.app, this.plugin).open(); };
-	}
-
-	renderTrackList(container: HTMLElement, baseFolder: string) {
-		const ostList = getSoundtracks(this.app, baseFolder);
-		const trackList = getAllTracks(this.app, baseFolder);
-
-		const trackListContainer = container.createDiv({ cls: 'storyscore-track-list-container' });
-
-		const projectSelect = trackListContainer.createEl('select', { cls: 'dropdown storyscore-project-select' });
-
-		projectSelect.createEl('option', { text: t('MANAGER_ALL_TRACKS'), value: 'all' });
-
-		ostList.forEach(ost => {
-			const opt = projectSelect.createEl('option', { text: ost.title, value: ost.id });
-			if (ost.id === this.currentAlbumFilter) {
-				opt.selected = true;
-			}
-		});
-
-		projectSelect.onchange = () => {
-			this.currentAlbumFilter = projectSelect.value;
-			void this.renderView();
-		};
-
-		let filteredTracks = trackList;
-		if (this.currentAlbumFilter !== 'all') {
-			filteredTracks = trackList.filter(track => track.albumId === this.currentAlbumFilter);
-		}
-
-		if (filteredTracks.length === 0) {
-			trackListContainer.createEl('p', { text: t('MANAGER_EMPTY_FILTER'), cls: 'storyscore-empty-filter' });
-		} else {
-			filteredTracks.forEach(track => {
-				const cardWrapper = trackListContainer.createDiv();
-				const ost = ostList.find(o => o.id === track.albumId);
-				renderTrackCard(cardWrapper, track, ost, this.app, this.plugin);
-			});
-		}
+		btnAddLeitmotif.onclick = () => { new NewLeitmotifModal(this.app, null, this.plugin).open(); };
 	}
 
 	async onClose() {}

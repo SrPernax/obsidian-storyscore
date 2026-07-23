@@ -18,7 +18,7 @@ export const DEFAULT_SETTINGS: StoryScoreSettings = {
 
 export class StoryScoreSettingTab extends PluginSettingTab {
 	plugin: StoryScorePlugin;
-	activeTab: 'folders' | 'help' | 'design' = 'folders';
+	activeTab: 'news' | 'folders' | 'help' | 'design' = 'news';
 
 	constructor(app: App, plugin: StoryScorePlugin) {
 		super(app, plugin);
@@ -32,7 +32,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		const headerBox = containerEl.createDiv({ cls: 'storyscore-settings-header' });
 
 		const isDarkTheme = document.body.classList.contains('theme-dark');
-		const logoData = isDarkTheme ? LogoWhite : LogoBlack;
+		const logoData = "data:image/svg+xml;base64," + (isDarkTheme ? LogoWhite : LogoBlack);
 		
 		const logo = headerBox.createEl('img', { cls: 'storyscore-settings-logo' });
 		logo.src = logoData;
@@ -45,6 +45,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		
 		const sidebar = wrapper.createDiv({ cls: 'storyscore-settings-sidebar' });
 		
+		this.createSidebarButton(sidebar, 'star', t('SETTINGS_TAB_NEWS'), 'news');
 		this.createSidebarButton(sidebar, 'folder', t('SETTINGS_TAB_FOLDERS'), 'folders');
 		this.createSidebarButton(sidebar, 'brush', t('SETTINGS_TAB_DESIGN'), 'design');
 		this.createSidebarButton(sidebar, 'help-circle', t('SETTINGS_TAB_HELP'), 'help');
@@ -52,7 +53,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		const footer = sidebar.createDiv({ cls: 'storyscore-settings-footer' });
 		
 		const pernaxImg = footer.createEl('img', { cls: 'storyscore-settings-pernax-logo' });
-		pernaxImg.src = PernaxLogo;
+		pernaxImg.src = "data:image/svg+xml;base64," + PernaxLogo;
 		
 		footer.createSpan({ text: t('SETTINGS_CREATED_BY') });
 		const authorBtn = footer.createEl('button', { text: 'Pernax', cls: 'storyscore-settings-author-btn' });
@@ -60,7 +61,9 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		
 		const content = wrapper.createDiv({ cls: 'storyscore-settings-content' });
 		
-		if (this.activeTab === 'folders') {
+		if (this.activeTab === 'news') {
+			this.renderNewsTab(content);
+		} else if (this.activeTab === 'folders') {
 			this.renderFoldersTab(content);
 		} else if (this.activeTab === 'design') {
 			this.renderDesignTab(content);
@@ -69,7 +72,7 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 		}
 	}
 	
-	createSidebarButton(container: HTMLElement, iconId: string, label: string, tabId: 'folders' | 'help' | 'design') {
+	createSidebarButton(container: HTMLElement, iconId: string, label: string, tabId: 'news' | 'folders' | 'help' | 'design') {
 		const btn = container.createEl('button', { cls: 'storyscore-settings-tab-btn' });
 		if (this.activeTab === tabId) {
 			btn.addClass('is-active');
@@ -100,6 +103,37 @@ export class StoryScoreSettingTab extends PluginSettingTab {
 			);
 	}
 	
+	renderNewsTab(container: HTMLElement) {
+		const changelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 20px;' } });
+		changelogBox.createEl('h3', { text: t('SETTINGS_NEWS_TITLE') });
+		
+		const list = changelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		list.createEl('li', { text: t('SETTINGS_NEWS_1') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_2') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_3') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_4') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_5') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_6') });
+
+		const oldChangelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; opacity: 0.8;' } });
+		oldChangelogBox.createEl('h3', { text: t('SETTINGS_NEWS_OLD_1_0_1_TITLE') });
+		
+		const oldList = oldChangelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		oldList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_1_1') });
+		oldList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_1_2') });
+
+		const launchChangelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; opacity: 0.6; margin-top: 20px;' } });
+		launchChangelogBox.createEl('h3', { text: t('SETTINGS_NEWS_OLD_1_0_0_TITLE') });
+		
+		const launchList = launchChangelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_1') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_2') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_3') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_4') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_5') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_6') });
+	}
+
 	renderDesignTab(container: HTMLElement) {
 		new Setting(container)
 			.setName(t('SETTINGS_COMPACT_MODE'))

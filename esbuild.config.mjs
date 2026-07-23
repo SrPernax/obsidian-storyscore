@@ -56,7 +56,7 @@ const context = await esbuild.context({
 	minify: prod,
 	plugins: [copyCssPlugin],
 	loader: {
-		'.svg': 'dataurl'
+		'.svg': 'base64'
 	}
 });
 

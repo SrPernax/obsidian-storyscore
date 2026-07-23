@@ -94,6 +94,17 @@ If you find this plugin useful for your projects and want to support its develop
   </a>
 </div>
 
+## Other Projects
+Check out my other plugins for Obsidian:
+
+<div align="center">
+  <a href="https://github.com/SrPernax/obsidian-easyfilereplace" target="_blank">
+    <img src="assets/store/easyfilereplace-banner.png" alt="Easy File Replace" width="400" style="border-radius: 8px;">
+  </a>
+  <br>
+  <strong>Easy File Replace</strong> - Effortlessly replace your attachments' contents without breaking links.
+</div>
+
 <br>
 <div align="center">
   Thanks for using <b>StoryScore</b>

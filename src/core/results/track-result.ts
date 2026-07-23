@@ -8,5 +8,7 @@ export interface TrackResult {
 	audio?: string;
 	type?: string;
 	status?: string;
+	lyrics?: string;
+	diegesis?: string;
+	leitmotifs?: string[];
 }
-

@@ -6,4 +6,6 @@ export interface LeitmotifData {
 	audio: string;
 	motifType: string;
 	musicalAnnotations: string;
+	color: string;
+	customEntityType?: string;
 }

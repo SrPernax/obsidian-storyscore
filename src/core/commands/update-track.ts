@@ -11,6 +11,7 @@ export async function updateTrackFile(app: App, file: TFile, data: TrackData): P
 			frontmatter['type'] = data.type;
 			frontmatter['diegetic'] = data.diegetic;
 			frontmatter['status'] = data.status;
+			frontmatter['lyrics'] = data.lyrics;
 			frontmatter['audio'] = `[[${data.audio}]]`;
 			
 			if (data.leitmotifs && data.leitmotifs.length > 0) {

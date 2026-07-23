@@ -1,7 +1,7 @@
-import { App, Notice, Modal } from 'obsidian';
+import { App, Notice, Modal, setIcon } from 'obsidian';
 import { TrackResult } from '../../core/results/track-result';
 import { SoundtrackResult } from '../../core/results/soundtrack-result';
-import { NewTrackModal } from '../add-track';
+import { TrackInfoModal } from '../informations/track-info';
 import { t } from '../../locales/lenguajes';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/utils/constants';
 import type StoryScorePlugin from '../../main';
@@ -33,13 +33,17 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	}
 	
 	if (!hasCover) {
-		cover.style.backgroundImage = `url('${NsLogo}')`;
+		cover.style.backgroundImage = `url('data:image/svg+xml;base64,${NsLogo}')`;
 		cover.addClass("storyscore-track-cover-default");
 	}
 
 	const infoDiv = playerContainer.createDiv({ cls: "storyscore-track-info" });
 
-	infoDiv.createEl("h4", { text: track.title, cls: "resonance-track-title storyscore-track-info-title" });
+	const titleEl = infoDiv.createEl("h4", { text: track.title, cls: "resonance-track-title storyscore-track-info-title" });
+	titleEl.style.cursor = "pointer";
+	titleEl.onclick = () => {
+		void app.workspace.getLeaf().openFile(track.file);
+	};
 	
 	if (track.description) {
 		const descEl = infoDiv.createSpan({ cls: "storyscore-track-desc" });
@@ -74,19 +78,18 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	// @ts-ignore
 	if (statusObj) statusStr = t(statusObj.labelKey as unknown);
 
-	const ostTitle = ost ? ost.title : t('CARD_NO_ALBUM');
 	const trackType = typeStr ? (typeStr.charAt(0).toUpperCase() + typeStr.slice(1)) : "";
 	const trackStatus = statusStr ? (statusStr.charAt(0).toUpperCase() + statusStr.slice(1)) : "";
 	
-	let subtitleText = ostTitle;
-	if (trackType && trackType !== t('CARD_UNKNOWN_TYPE') && trackType !== "Desconocido") subtitleText += ` • ${trackType}`;
-	if (trackStatus && trackStatus !== t('CARD_NO_STATUS') && trackStatus !== "Sin estado") subtitleText += ` • ${trackStatus}`;
+	let subtitleText = "";
+	if (trackType && trackType !== t('CARD_UNKNOWN_TYPE') && trackType !== "Desconocido") subtitleText = trackType;
+	if (trackStatus && trackStatus !== t('CARD_NO_STATUS') && trackStatus !== "Sin estado") {
+		subtitleText += subtitleText ? ` • ${trackStatus}` : trackStatus;
+	}
 	
 	infoDiv.createSpan({ text: subtitleText, cls: "storyscore-track-subtitle" });
-	infoDiv.createEl("small", { text: `ID: ${track.id}`, cls: "storyscore-track-id" });
 
-	const rightControls = playerContainer.createDiv({ cls: "storyscore-track-controls" });
-	const audioElement = rightControls.createEl("audio", { cls: "storyscore-track-audio" });
+	const audioElement = infoDiv.createEl("audio", { cls: "storyscore-track-audio", attr: { style: "width: 100%; margin-top: 10px;" } });
 	audioElement.setAttribute("controls", "true");
 
 	if (track.audio) {
@@ -101,31 +104,10 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 		}
 	}
 
-	const buttonsBox = rightControls.createDiv({ cls: "storyscore-track-buttons" });
-	
-	const btnEdit = buttonsBox.createEl("button", { text: t('CARD_EDIT'), cls: "storyscore-track-btn" });
-	btnEdit.onclick = () => {
-		new NewTrackModal(app, track.file, plugin).open();
-	};
-
-	const btnDelete = buttonsBox.createEl("button", { text: t('CARD_DELETE'), cls: "mod-warning storyscore-track-btn" });
-	btnDelete.onclick = () => {
-		const modal = new Modal(app);
-		modal.titleEl.setText(t('CARD_DELETE_TITLE'));
-		modal.contentEl.createEl("p", { text: t('CARD_DELETE_CONFIRM', track.title) });
-		
-		const btnContainer = modal.contentEl.createDiv({ cls: "storyscore-modal-buttons" });
-		
-		const cancelBtn = btnContainer.createEl("button", { text: t('CANCEL') });
-		cancelBtn.onclick = () => modal.close();
-		
-		const confirmBtn = btnContainer.createEl("button", { text: t('DELETE'), cls: "mod-warning" });
-		confirmBtn.onclick = async () => {
-			await app.fileManager.trashFile(track.file);
-			new Notice(t('CARD_DELETED_NOTICE', track.title));
-			modal.close();
-		};
-		
-		modal.open();
+	const rightControls = playerContainer.createDiv({ attr: { style: "display: flex; margin-left: auto; align-items: center;" } });
+	const btnInfo = rightControls.createEl("button", { cls: "storyscore-icon-btn", attr: { 'aria-label': 'Info', style: 'padding: 5px 20px;' } });
+	setIcon(btnInfo, "info");
+	btnInfo.onclick = () => {
+		new TrackInfoModal(app, track, ost, plugin).open();
 	};
 }
