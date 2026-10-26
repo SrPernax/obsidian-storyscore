@@ -73,7 +73,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-track',
 			name: t('CMD_INSERT_TRACK'),
-			
+
 			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
 				new TrackInsertModal(this.app, editor, this).open();
 			}
@@ -94,7 +94,7 @@ export default class StoryScorePlugin extends Plugin {
 				new LeitmotifInsertModal(this.app, editor, this).open();
 			}
 		});
-		
+
 		this.addSettingTab(new StoryScoreSettingTab(this.app, this));
 
 		registerStoryScoreCodeBlock(this);
@@ -117,7 +117,7 @@ export default class StoryScorePlugin extends Plugin {
 	}
 
 	onunload() {
-		
+
 	}
 
 	async loadSettings() {

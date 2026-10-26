@@ -9,11 +9,6 @@ import { renderTrackCard } from '../../ui/cards/track-card';
 
 export const STORYSCORE_CODEBLOCK = 'storyscore';
 
-/**
- * Renders a ```storyscore``` code block. The ID prefix decides which card is
- * rendered: `LM-` for leitmotifs, `ST-` for soundtracks and anything else for
- * tracks.
- */
 export function registerStoryScoreCodeBlock(plugin: StoryScorePlugin): void {
 	plugin.registerMarkdownCodeBlockProcessor(STORYSCORE_CODEBLOCK, (source, el) => {
 		renderStoryScoreCard(plugin, source, el);
@@ -55,10 +50,6 @@ function renderStoryScoreCard(plugin: StoryScorePlugin, source: string, el: HTML
 	renderTrackCard(el, track, soundtrack, app, plugin);
 }
 
-/**
- * Accepts both the bare ID (`SS-abc12`) and the legacy prefixed forms
- * (`id: SS-abc12`, `st: ST-abc12`, `ost: ST-abc12`).
- */
 function parseCodeBlockId(source: string): string {
 	const raw = source.trim();
 	const prefix = /^(?:id|ost|st):/i.exec(raw);
