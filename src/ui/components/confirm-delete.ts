@@ -1,5 +1,5 @@
 import { App, Modal, Notice, TFile } from 'obsidian';
-import { t } from '../../locales/lenguajes';
+import { t } from '../../i18n';
 
 export class ConfirmDeleteModal extends Modal {
     constructor(

@@ -1,6 +1,6 @@
 import { App, Notice, TFile } from 'obsidian';
-import { LeitmotifData } from "../dtos/leitmotif-data";
-import { t } from "../../locales/lenguajes";
+import { LeitmotifData } from "../models/leitmotif-data";
+import { t } from "../../i18n";
 
 export async function updateLeitmotifFile(app: App, file: TFile, data: LeitmotifData): Promise<void> {
 	try {

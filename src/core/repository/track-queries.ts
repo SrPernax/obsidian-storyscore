@@ -1,6 +1,6 @@
 import { App } from 'obsidian';
 import { getTrackFiles } from './file-queries';
-import { TrackResult } from '../results/track-result';
+import { TrackResult } from '../models/track-result';
 
 export function getAllTracks(app: App, baseFolder: string): TrackResult[] {
 	const trackFiles = getTrackFiles(app, baseFolder);

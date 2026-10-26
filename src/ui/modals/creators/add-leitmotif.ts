@@ -1,11 +1,11 @@
 import { App, Modal, Notice, Setting, TextComponent, TFile } from 'obsidian';
-import { getAudioFiles, getMarkdownFiles } from '../../core/queries/file-queries';
-import { FilesSuggestModal } from '../../core/utils/suggests';
-import { createLeitmotifFile } from '../../core/commands/create-leitmotif';
-import { updateLeitmotifFile } from '../../core/commands/update-leitmotif';
-import { t } from '../../locales/lenguajes';
-import { LM_TYPES } from '../../core/utils/constants';
-import type StoryScorePlugin from '../../main';
+import { getAudioFiles, getMarkdownFiles } from '../../../core/repository/file-queries';
+import { FilesSuggestModal } from '../../components/files-suggest-modal';
+import { createLeitmotifFile } from '../../../core/services/create-leitmotif';
+import { updateLeitmotifFile } from '../../../core/services/update-leitmotif';
+import { t } from '../../../i18n';
+import { LM_TYPES } from '../../../core/constants/taxonomy';
+import type StoryScorePlugin from '../../../main';
 
 export class NewLeitmotifModal extends Modal {
 	motifTitle: string = "";

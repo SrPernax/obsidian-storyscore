@@ -1,20 +1,10 @@
 import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsidian';
-import StoryScorePlugin from './main';
-import { t } from './locales/lenguajes';
+import StoryScorePlugin from '../main';
+import { t } from '../i18n';
 
-import LogoBlack from '../assets/plugin/logo-black.svg';
-import LogoWhite from '../assets/plugin/logo-white.svg';
-import PernaxLogo from '../assets/plugin/pernax-logo.svg';
-
-export interface StoryScoreSettings {
-	baseFolder: string;
-	compactMode: boolean;
-}
-
-export const DEFAULT_SETTINGS: StoryScoreSettings = {
-	baseFolder: 'StoryScore',
-	compactMode: false,
-};
+import LogoBlack from '../../assets/plugin/logo-black.svg';
+import LogoWhite from '../../assets/plugin/logo-white.svg';
+import PernaxLogo from '../../assets/plugin/pernax-logo.svg';
 
 export class StoryScoreSettingTab extends PluginSettingTab {
 	plugin: StoryScorePlugin;

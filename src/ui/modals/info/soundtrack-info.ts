@@ -1,13 +1,13 @@
 import { App, Modal, Notice } from 'obsidian';
-import { SoundtrackResult } from '../../core/results/soundtrack-result';
-import type StoryScorePlugin from '../../main';
-import { t } from '../../locales/lenguajes';
-import { NewSoundtrackModal } from '../creators/add-sountrack';
-import { getAllTracks } from '../../core/queries/track-queries';
-import { renderTrackCard } from '../cards/track-card';
-import { ConfirmDeleteModal } from '../components/confirm-delete';
-import { InformationControl } from '../components/information-control';
-import NsLogo from '../../../assets/plugin/ns-logo.svg';
+import { SoundtrackResult } from '../../../core/models/soundtrack-result';
+import type StoryScorePlugin from '../../../main';
+import { t } from '../../../i18n';
+import { NewSoundtrackModal } from '../creators/add-soundtrack';
+import { getAllTracks } from '../../../core/repository/track-queries';
+import { renderTrackCard } from '../../cards/track-card';
+import { ConfirmDeleteModal } from '../../components/confirm-delete';
+import { InformationControl } from '../../components/information-control';
+import NsLogo from '../../../../assets/plugin/ns-logo.svg';
 
 export class SoundtrackInfoModal extends Modal {
 	ost: SoundtrackResult;

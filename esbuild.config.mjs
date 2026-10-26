@@ -8,8 +8,8 @@ const copyCssPlugin = {
 	setup(build) {
 		build.onEnd(() => {
 			try {
-				fs.copyFileSync('src/design/styles.css', 'styles.css');
-				console.log('Copied src/design/styles.css to styles.css');
+				fs.copyFileSync('src/styles/styles.css', 'styles.css');
+				console.log('Copied src/styles/styles.css to styles.css');
 			} catch (e) {
 				console.error('Failed to copy styles.css', e);
 			}

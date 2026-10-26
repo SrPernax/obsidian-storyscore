@@ -1,5 +1,5 @@
 import { App, TFile } from 'obsidian';
-import {StoryScorePaths} from "../utils/paths";
+import {StoryScorePaths} from "../constants/paths";
 
 export function getMarkdownFiles(app: App): TFile[] {
 	return app.vault.getMarkdownFiles();

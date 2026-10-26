@@ -1,10 +1,10 @@
 import { App, Modal, Notice, Setting, TextComponent, TFile } from 'obsidian';
-import { createSoundtrackFile } from "../../core/commands/create-soundtrack";
-import { updateSoundtrackFile } from "../../core/commands/update-soundtrack";
-import {FilesSuggestModal} from "../../core/utils/suggests";
-import {getImageFiles} from "../../core/queries/file-queries";
-import {t} from "../../locales/lenguajes";
-import type StoryScorePlugin from "../../main";
+import { createSoundtrackFile } from "../../../core/services/create-soundtrack";
+import { updateSoundtrackFile } from "../../../core/services/update-soundtrack";
+import {FilesSuggestModal} from "../../components/files-suggest-modal";
+import {getImageFiles} from "../../../core/repository/file-queries";
+import {t} from "../../../i18n";
+import type StoryScorePlugin from "../../../main";
 
 export class NewSoundtrackModal extends Modal {
 	trackTitle: string;

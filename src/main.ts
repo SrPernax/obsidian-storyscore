@@ -1,20 +1,20 @@
 import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf} from 'obsidian';
 import { DEFAULT_SETTINGS, StoryScoreSettings, StoryScoreSettingTab } from './settings';
-import { NewTrackModal } from "./ui/creators/add-track";
-import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/manager";
-import { NewSoundtrackModal } from "./ui/creators/add-sountrack";
-import { TrackInsertModal } from "./core/commands/insert-track";
-import { SoundtrackInsertModal } from "./core/commands/insert-soundtrack";
-import { LeitmotifInsertModal } from "./core/commands/insert-leitmotif";
+import { NewTrackModal } from "./ui/modals/creators/add-track";
+import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/view/manager-view";
+import { NewSoundtrackModal } from "./ui/modals/creators/add-soundtrack";
+import { TrackInsertModal } from "./core/services/insert-track";
+import { SoundtrackInsertModal } from "./core/services/insert-soundtrack";
+import { LeitmotifInsertModal } from "./core/services/insert-leitmotif";
 
 import {renderTrackCard} from "./ui/cards/track-card";
 import {renderSoundtrackCard} from "./ui/cards/soundtrack-card";
 import {renderLeitmotifCard} from "./ui/cards/leitmotif-card";
-import {getTrackById} from "./core/queries/track-queries";
-import {getSoundtrackById} from "./core/queries/soundtrack-queries";
-import {getLeitmotifById} from "./core/queries/leitmotif-queries";
-import { NewLeitmotifModal } from "./ui/creators/add-leitmotif";
-import { t } from "./locales/lenguajes";
+import {getTrackById} from "./core/repository/track-queries";
+import {getSoundtrackById} from "./core/repository/soundtrack-queries";
+import {getLeitmotifById} from "./core/repository/leitmotif-queries";
+import { NewLeitmotifModal } from "./ui/modals/creators/add-leitmotif";
+import { t } from "./i18n";
 
 export default class StoryScorePlugin extends Plugin {
 	settings!: StoryScoreSettings;

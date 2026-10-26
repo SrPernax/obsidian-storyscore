@@ -1,5 +1,5 @@
 import { App, TFile } from "obsidian";
-import { SoundtrackResult } from "../results/soundtrack-result";
+import { SoundtrackResult } from "../models/soundtrack-result";
 import { getSoundtrackFiles } from "./file-queries";
 
 export function getSoundtracks(app: App, baseFolder: string): SoundtrackResult[] {

@@ -1,6 +1,6 @@
 import { App, setIcon } from 'obsidian';
-import { LeitmotifResult } from '../../core/results/leitmotif-result';
-import { LeitmotifInfoModal } from '../informations/leitmotif-info';
+import { LeitmotifResult } from '../../core/models/leitmotif-result';
+import { LeitmotifInfoModal } from '../modals/info/leitmotif-info';
 import type StoryScorePlugin from '../../main';
 
 export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult, app: App, plugin: StoryScorePlugin) {

@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
-import { StoryScorePaths } from '../utils/paths';
-import { SoundtrackData } from "../dtos/soundtrack-data";
-import { t } from "../../locales/lenguajes";
+import { StoryScorePaths } from '../constants/paths';
+import { SoundtrackData } from "../models/soundtrack-data";
+import { t } from "../../i18n";
 
 export async function createSoundtrackFile(app: App, data: SoundtrackData, baseFolder: string): Promise<void> {
 

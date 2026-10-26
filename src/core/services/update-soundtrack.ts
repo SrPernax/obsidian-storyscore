@@ -1,6 +1,6 @@
 import { App, Notice, TFile } from 'obsidian';
-import { SoundtrackData } from "../dtos/soundtrack-data";
-import { t } from "../../locales/lenguajes";
+import { SoundtrackData } from "../models/soundtrack-data";
+import { t } from "../../i18n";
 
 export async function updateSoundtrackFile(app: App, file: TFile, data: SoundtrackData): Promise<void> {
 	try {

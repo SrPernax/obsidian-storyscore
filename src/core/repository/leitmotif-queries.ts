@@ -1,5 +1,5 @@
 import { App, TFile } from "obsidian";
-import { LeitmotifResult } from "../results/leitmotif-result";
+import { LeitmotifResult } from "../models/leitmotif-result";
 import { getLeitmotifFiles } from "./file-queries";
 
 export function getLeitmotifs(app: App, baseFolder: string): LeitmotifResult[] {

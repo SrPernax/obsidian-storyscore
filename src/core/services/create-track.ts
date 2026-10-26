@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
-import { StoryScorePaths } from '../utils/paths';
-import {TrackData} from "../dtos/track-data";
-import { t } from "../../locales/lenguajes";
+import { StoryScorePaths } from '../constants/paths';
+import {TrackData} from "../models/track-data";
+import { t } from "../../i18n";
 
 export async function createTrackFile(app: App, data: TrackData, baseFolder: string): Promise<void> {
 	

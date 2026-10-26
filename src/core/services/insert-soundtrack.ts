@@ -1,6 +1,6 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
-import { getSoundtracks } from "../queries/soundtrack-queries";
-import { t } from "../../locales/lenguajes";
+import { getSoundtracks } from "../repository/soundtrack-queries";
+import { t } from "../../i18n";
 import type StoryScorePlugin from "../../main";
 
 export interface SoundtrackItem {

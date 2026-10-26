@@ -1,8 +1,8 @@
 import { App } from 'obsidian';
 import type StoryScorePlugin from '../../main';
-import { getLeitmotifs } from '../../core/queries/leitmotif-queries';
+import { getLeitmotifs } from '../../core/repository/leitmotif-queries';
 import { renderLeitmotifCard } from '../cards/leitmotif-card';
-import { t } from '../../locales/lenguajes';
+import { t } from '../../i18n';
 
 export function renderLeitmotifList(
 	container: HTMLElement, 

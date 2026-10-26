@@ -1,9 +1,9 @@
 import { App, Notice, Modal, setIcon } from 'obsidian';
-import { TrackResult } from '../../core/results/track-result';
-import { SoundtrackResult } from '../../core/results/soundtrack-result';
-import { TrackInfoModal } from '../informations/track-info';
-import { t } from '../../locales/lenguajes';
-import { TRACK_TYPES, TRACK_STATUSES } from '../../core/utils/constants';
+import { TrackResult } from '../../core/models/track-result';
+import { SoundtrackResult } from '../../core/models/soundtrack-result';
+import { TrackInfoModal } from '../modals/info/track-info';
+import { t } from '../../i18n';
+import { TRACK_TYPES, TRACK_STATUSES } from '../../core/constants/taxonomy';
 import type StoryScorePlugin from '../../main';
 
 import NsLogo from '../../../assets/plugin/ns-logo.svg';

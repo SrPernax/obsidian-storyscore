@@ -1,7 +1,7 @@
 import { App, setIcon } from 'obsidian';
-import { SoundtrackResult } from '../../core/results/soundtrack-result';
+import { SoundtrackResult } from '../../core/models/soundtrack-result';
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
-import { SoundtrackInfoModal } from '../informations/soundtrack-info';
+import { SoundtrackInfoModal } from '../modals/info/soundtrack-info';
 import type StoryScorePlugin from '../../main';
 
 export function renderSoundtrackCard(container: HTMLElement, ost: SoundtrackResult, app: App, plugin: StoryScorePlugin) {

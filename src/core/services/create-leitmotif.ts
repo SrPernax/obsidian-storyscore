@@ -1,7 +1,7 @@
 import { App, Notice } from 'obsidian';
-import { StoryScorePaths } from '../utils/paths';
-import { LeitmotifData } from "../dtos/leitmotif-data";
-import { t } from "../../locales/lenguajes";
+import { StoryScorePaths } from '../constants/paths';
+import { LeitmotifData } from "../models/leitmotif-data";
+import { t } from "../../i18n";
 
 export async function createLeitmotifFile(app: App, data: LeitmotifData, baseFolder: string): Promise<void> {
 	

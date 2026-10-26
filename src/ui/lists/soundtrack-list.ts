@@ -1,8 +1,8 @@
 import { App } from 'obsidian';
 import type StoryScorePlugin from '../../main';
-import { getSoundtracks } from '../../core/queries/soundtrack-queries';
+import { getSoundtracks } from '../../core/repository/soundtrack-queries';
 import { renderSoundtrackCard } from '../cards/soundtrack-card';
-import { t } from '../../locales/lenguajes';
+import { t } from '../../i18n';
 
 export function renderSoundtrackList(
 	container: HTMLElement, 

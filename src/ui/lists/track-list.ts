@@ -1,9 +1,9 @@
 import { App } from 'obsidian';
 import type StoryScorePlugin from '../../main';
-import { getSoundtracks } from '../../core/queries/soundtrack-queries';
-import { getAllTracks } from '../../core/queries/track-queries';
+import { getSoundtracks } from '../../core/repository/soundtrack-queries';
+import { getAllTracks } from '../../core/repository/track-queries';
 import { renderTrackCard } from '../cards/track-card';
-import { t } from '../../locales/lenguajes';
+import { t } from '../../i18n';
 
 export function renderTrackList(
 	container: HTMLElement, 

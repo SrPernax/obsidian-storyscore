@@ -1,5 +1,5 @@
 import { App, Notice, TFile } from "obsidian";
-import { t } from "../../locales/lenguajes";
+import { t } from "../../i18n";
 import { ConfirmDeleteModal } from "./confirm-delete";
 import type StoryScorePlugin from "../../main";
 

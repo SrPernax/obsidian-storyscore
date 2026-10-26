@@ -1,15 +1,15 @@
 import { ItemView, WorkspaceLeaf, debounce } from 'obsidian';
-import { NewSoundtrackModal } from "./creators/add-sountrack";
-import { NewTrackModal } from "./creators/add-track";
-import { NewLeitmotifModal } from "./creators/add-leitmotif";
+import { NewSoundtrackModal } from "../modals/creators/add-soundtrack";
+import { NewTrackModal } from "../modals/creators/add-track";
+import { NewLeitmotifModal } from "../modals/creators/add-leitmotif";
 
-import LogoBlack from '../../assets/plugin/logo-black.svg';
-import LogoWhite from '../../assets/plugin/logo-white.svg';
-import { renderTrackList } from "./lists/track-list";
-import { renderSoundtrackList } from "./lists/soundtrack-list";
-import { renderLeitmotifList } from "./lists/leitmotif-list";
-import { t } from "../locales/lenguajes";
-import type StoryScorePlugin from '../main';
+import LogoBlack from '../../../assets/plugin/logo-black.svg';
+import LogoWhite from '../../../assets/plugin/logo-white.svg';
+import { renderTrackList } from "../lists/track-list";
+import { renderSoundtrackList } from "../lists/soundtrack-list";
+import { renderLeitmotifList } from "../lists/leitmotif-list";
+import { t } from "../../i18n";
+import type StoryScorePlugin from '../../main';
 
 export const VIEW_TYPE_STORYSCORE = "storyscore-view";
 

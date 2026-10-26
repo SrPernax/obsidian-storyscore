@@ -1,12 +1,12 @@
 import { App, Modal, Notice, Setting, TFile, TextComponent } from 'obsidian';
-import { getSoundtracks } from "../../core/queries/soundtrack-queries";
-import { createTrackFile } from "../../core/commands/create-track";
-import { updateTrackFile } from "../../core/commands/update-track";
-import { getAudioFiles, getLeitmotifFiles } from "../../core/queries/file-queries";
-import {FilesSuggestModal} from "../../core/utils/suggests";
-import { t } from "../../locales/lenguajes";
-import { TRACK_TYPES, TRACK_STATUSES } from "../../core/utils/constants";
-import type StoryScorePlugin from "../../main";
+import { getSoundtracks } from "../../../core/repository/soundtrack-queries";
+import { createTrackFile } from "../../../core/services/create-track";
+import { updateTrackFile } from "../../../core/services/update-track";
+import { getAudioFiles, getLeitmotifFiles } from "../../../core/repository/file-queries";
+import {FilesSuggestModal} from "../../components/files-suggest-modal";
+import { t } from "../../../i18n";
+import { TRACK_TYPES, TRACK_STATUSES } from "../../../core/constants/taxonomy";
+import type StoryScorePlugin from "../../../main";
 
 export class NewTrackModal extends Modal {
 	trackTitle: string;

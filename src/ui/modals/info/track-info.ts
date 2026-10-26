@@ -1,17 +1,17 @@
 import { App, Modal, Notice } from 'obsidian';
-import { TrackResult } from '../../core/results/track-result';
-import { SoundtrackResult } from '../../core/results/soundtrack-result';
-import type StoryScorePlugin from '../../main';
-import { t } from '../../locales/lenguajes';
+import { TrackResult } from '../../../core/models/track-result';
+import { SoundtrackResult } from '../../../core/models/soundtrack-result';
+import type StoryScorePlugin from '../../../main';
+import { t } from '../../../i18n';
 import { NewTrackModal } from '../creators/add-track';
-import { ConfirmDeleteModal } from '../components/confirm-delete';
-import { InformationControl } from '../components/information-control';
-import { LeitmotifTagButton } from '../components/leitmotif-tag';
-import { getLeitmotifById } from '../../core/queries/leitmotif-queries';
-import { TRACK_TYPES, TRACK_STATUSES, DIEGESIS_TYPES } from '../../core/utils/constants';
+import { ConfirmDeleteModal } from '../../components/confirm-delete';
+import { InformationControl } from '../../components/information-control';
+import { LeitmotifTagButton } from '../../components/leitmotif-tag';
+import { getLeitmotifById } from '../../../core/repository/leitmotif-queries';
+import { TRACK_TYPES, TRACK_STATUSES, DIEGESIS_TYPES } from '../../../core/constants/taxonomy';
 
 // @ts-ignore
-import NsLogo from '../../../assets/plugin/ns-logo.svg';
+import NsLogo from '../../../../assets/plugin/ns-logo.svg';
 
 export class TrackInfoModal extends Modal {
 	track: TrackResult;

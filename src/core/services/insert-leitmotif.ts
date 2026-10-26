@@ -1,6 +1,6 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
-import { getLeitmotifs } from "../queries/leitmotif-queries";
-import { t } from "../../locales/lenguajes";
+import { getLeitmotifs } from "../repository/leitmotif-queries";
+import { t } from "../../i18n";
 import type StoryScorePlugin from "../../main";
 
 export interface LeitmotifItem {
