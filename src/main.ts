@@ -7,13 +7,8 @@ import { TrackInsertModal } from "./core/services/insert-track";
 import { SoundtrackInsertModal } from "./core/services/insert-soundtrack";
 import { LeitmotifInsertModal } from "./core/services/insert-leitmotif";
 
-import {renderTrackCard} from "./ui/cards/track-card";
-import {renderSoundtrackCard} from "./ui/cards/soundtrack-card";
-import {renderLeitmotifCard} from "./ui/cards/leitmotif-card";
-import {getTrackById} from "./core/repository/track-queries";
-import {getSoundtrackById} from "./core/repository/soundtrack-queries";
-import {getLeitmotifById} from "./core/repository/leitmotif-queries";
 import { NewLeitmotifModal } from "./ui/modals/creators/add-leitmotif";
+import { registerStoryScoreCodeBlock } from "./core/services/codeblock";
 import { t } from "./i18n";
 
 export default class StoryScorePlugin extends Plugin {
@@ -102,47 +97,7 @@ export default class StoryScorePlugin extends Plugin {
 		
 		this.addSettingTab(new StoryScoreSettingTab(this.app, this));
 
-		this.registerMarkdownCodeBlockProcessor("storyscore", (source, el, ctx) => {
-			let inputId = source.trim();
-
-			if (inputId.toLowerCase().startsWith('id:')) {
-				inputId = inputId.substring(3).trim();
-			} else if (inputId.toLowerCase().startsWith('st:')) {
-				inputId = inputId.substring(3).trim();
-			} else if (inputId.toLowerCase().startsWith('ost:')) {
-				inputId = inputId.substring(4).trim();
-			}
-			
-			const baseFolder = this.settings.baseFolder || 'StoryScore';
-			
-			if (inputId.startsWith('LM-')) {
-				const lm = getLeitmotifById(this.app, baseFolder, inputId);
-				if (lm) {
-					renderLeitmotifCard(el, lm, this.app, this);
-				} else {
-					el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-				}
-				return;
-			}
-			
-			if (inputId.startsWith('ST-')) {
-				const ost = getSoundtrackById(this.app, baseFolder, inputId);
-				if (ost) {
-					renderSoundtrackCard(el, ost, this.app, this);
-				} else {
-					el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-				}
-				return;
-			}
-			
-			const track = getTrackById(this.app, baseFolder, inputId);
-			if (track) {
-				const ost = getSoundtrackById(this.app, baseFolder, track.albumId);
-				renderTrackCard(el, track, ost, this.app, this);
-			} else {
-				el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-			}
-		});
+		registerStoryScoreCodeBlock(this);
 	}
 
 	async activateView() {
