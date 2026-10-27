@@ -8,9 +8,9 @@ import { t } from '../../../i18n';
 import { stripWikiLink } from '../../../lib/wiki-link';
 import { TRACK_STATUSES, TRACK_TYPES } from '../../../core/constants/taxonomy';
 import { getLeitmotifById } from '../../../core/repository/leitmotif-queries';
-import { LeitmotifTagButton } from '../../components/leitmotif-tag';
+import { LeitmotifTagButton } from '../../../components/leitmotif-tag';
 import { NewTrackModal } from '../creators/add-track';
-import { InformationControl } from '../../components/information-control';
+import { InformationControl } from '../../../components/information-control';
 
 export class TrackInfoModal extends Modal {
 	track: TrackResult;

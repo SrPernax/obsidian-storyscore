@@ -1,10 +1,10 @@
 import { App, Modal, Notice } from 'obsidian';
-import { LeitmotifResult } from '../../core/results/leitmotif-result';
+import { LeitmotifResult } from '../../core/models/leitmotif-result';
 import type StoryScorePlugin from '../../main';
 import { t } from '../../i18n';
 import { NewLeitmotifModal } from '../creators/add-leitmotif';
-import { ConfirmDeleteModal } from '../components/confirm-delete';
-import { InformationControl } from '../components/information-control';
+import { ConfirmDeleteModal } from '../../components/confirm-delete';
+import { InformationControl } from '../../components/information-control';
 import { stripWikiLink } from '../../lib/wiki-link';
 
 export class LeitmotifInfoModal extends Modal {

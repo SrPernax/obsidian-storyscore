@@ -1,11 +1,11 @@
 import { App, Modal, Notice } from 'obsidian';
-import { SoundtrackResult } from '../../core/results/soundtrack-result';
+import { SoundtrackResult } from '../../core/models/soundtrack-result';
 import type StoryScorePlugin from '../../main';
 import { t } from '../../i18n';
 import { NewSoundtrackModal } from '../creators/add-soundtrack';
 import { getAllTracks } from '../../core/repository/track-queries';
-import { ConfirmDeleteModal } from '../components/confirm-delete';
-import { InformationControl } from '../components/information-control';
+import { ConfirmDeleteModal } from '../../components/confirm-delete';
+import { InformationControl } from '../../components/information-control';
 import { stripWikiLink } from '../../lib/wiki-link';
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
 

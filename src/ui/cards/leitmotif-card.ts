@@ -1,6 +1,6 @@
 import { App, setIcon } from 'obsidian';
 import { LeitmotifResult } from '../../core/models/leitmotif-result';
-import { LeitmotifInfoModal } from '../../modals/info/leitmotif-info';
+import { LeitmotifInfoModal } from '../../ui/modals/info/leitmotif-info';
 import type StoryScorePlugin from '../../main';
 import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
 

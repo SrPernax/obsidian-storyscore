@@ -1,7 +1,7 @@
 import { App, setIcon } from 'obsidian';
 import { SoundtrackResult } from '../../core/models/soundtrack-result';
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
-import { SoundtrackInfoModal } from '../../modals/info/soundtrack-info';
+import { SoundtrackInfoModal } from '../../ui/modals/info/soundtrack-info';
 import type StoryScorePlugin from '../../main';
 import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
 
