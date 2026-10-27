@@ -38,8 +38,7 @@ export class StoryScoreView extends ItemView {
 		this.registerEvent(this.app.vault.on('create', this.debouncedRender));
 		this.registerEvent(this.app.vault.on('delete', this.debouncedRender));
 		this.registerEvent(this.app.vault.on('rename', this.debouncedRender));
-		// @ts-ignore
-		this.registerEvent(this.app.workspace.on('csschange', this.debouncedRender));
+		this.registerEvent(this.app.workspace.on('css-change', this.debouncedRender));
 	}
 
 	async renderView() {

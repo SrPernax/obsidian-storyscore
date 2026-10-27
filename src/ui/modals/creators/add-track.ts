@@ -20,7 +20,6 @@ export class NewTrackModal extends Modal {
 	selectedAlbumId: string = "none";
 
 	trackAudio: string = "";
-	trackCover: string = "";
 	associatedLeitmotifs: string[] = [];
 
 	constructor(app: App, public existingFile: TFile | undefined, public plugin: StoryScorePlugin) {
@@ -264,7 +263,7 @@ export class NewTrackModal extends Modal {
 						diegetic: this.trackDiegesis,
 						albumId: this.selectedAlbumId,
 						audio: this.trackAudio,
-						cover: this.trackCover,
+						/* cover: this.trackCover, */
 						leitmotifs: this.associatedLeitmotifs
 					};
 

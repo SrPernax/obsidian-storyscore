@@ -20,13 +20,3 @@ export function getSoundtracks(app: App, baseFolder: string): SoundtrackResult[]
 		};
 	});
 }
-
-export function SoundtracksExist(app: App, baseFolder: string): boolean {
-	const soundtracks = getSoundtracks(app, baseFolder);
-	return soundtracks.length > 0;
-}
-
-export function getSoundtrackById(app: App, baseFolder: string, soundtrackId: string): SoundtrackResult | undefined {
-	const allSoundtracks = getSoundtracks(app, baseFolder);
-	return allSoundtracks.find(s => s.id === soundtrackId);
-}
