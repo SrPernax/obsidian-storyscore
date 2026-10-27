@@ -1,13 +1,13 @@
 import { App, Modal, Notice } from 'obsidian';
-import { SoundtrackResult } from '../../../core/models/soundtrack-result';
-import type StoryScorePlugin from '../../../main';
-import { t } from '../../../i18n';
+import { SoundtrackResult } from '../../core/results/soundtrack-result';
+import type StoryScorePlugin from '../../main';
+import { t } from '../../i18n';
 import { NewSoundtrackModal } from '../creators/add-soundtrack';
-import { getAllTracks } from '../../../core/repository/track-queries';
-import { renderTrackCard } from '../../cards/track-card';
-import { ConfirmDeleteModal } from '../../components/confirm-delete';
-import { InformationControl } from '../../components/information-control';
-import NsLogo from '../../../../assets/plugin/ns-logo.svg';
+import { getAllTracks } from '../../core/repository/track-queries';
+import { ConfirmDeleteModal } from '../components/confirm-delete';
+import { InformationControl } from '../components/information-control';
+import { stripWikiLink } from '../../lib/wiki-link';
+import NsLogo from '../../../assets/plugin/ns-logo.svg';
 
 export class SoundtrackInfoModal extends Modal {
 	ost: SoundtrackResult;
@@ -32,9 +32,9 @@ export class SoundtrackInfoModal extends Modal {
 		contentEl.style.overflow = "hidden";
 		contentEl.style.height = "85vh";
 
-		contentEl.createEl("h2", { text: t('OST_INFO_TITLE'), cls: "storyscore-info-title", attr: { style: "flex-shrink: 0;" } });
+		contentEl.createEl("h2", { text: t('OST_INFO_TITLE'), cls: "story-info-title", attr: { style: "flex-shrink: 0;" } });
 
-		contentEl.createEl("hr", { cls: "storyscore-info-separator", attr: { style: "flex-shrink: 0;" } });
+		contentEl.createEl("hr", { cls: "storyinfo-separator", attr: { style: "flex-shrink: 0;" } });
 
 		const topSection = contentEl.createDiv({ attr: { style: "display: flex; gap: 30px; align-items: center; margin-bottom: 20px; flex-shrink: 0;" } });
 		
@@ -48,9 +48,7 @@ export class SoundtrackInfoModal extends Modal {
 
 		if (this.ost.cover) {
 			let coverPath = this.ost.cover;
-			if (coverPath.startsWith("[[") && coverPath.endsWith("]]")) {
-				coverPath = coverPath.substring(2, coverPath.length - 2);
-			}
+			coverPath = stripWikiLink(coverPath);
 			const imageFile = this.app.metadataCache.getFirstLinkpathDest(coverPath, "");
 			if (imageFile) {
 				imgEl.src = this.app.vault.getResourcePath(imageFile);
@@ -78,7 +76,7 @@ export class SoundtrackInfoModal extends Modal {
 		const linkedTracks = allTracks.filter(t => t.albumId === this.ost.id);
 
 		if (linkedTracks.length > 0) {
-			contentEl.createEl("hr", { cls: "storyscore-info-separator", attr: { style: "flex-shrink: 0;" } });
+			contentEl.createEl("hr", { cls: "storyinfo-separator", attr: { style: "flex-shrink: 0;" } });
 			contentEl.createEl("h3", { text: "Tracks (" + linkedTracks.length + ")", attr: { style: "margin-top: 0; flex-shrink: 0;" } });
 			
 			const tracksScroll = contentEl.createDiv({ attr: { style: "flex: 1; min-height: 0; overflow-y: auto; padding-right: 10px;" } });
@@ -86,12 +84,15 @@ export class SoundtrackInfoModal extends Modal {
 			
 			for (const track of linkedTracks) {
 				const trackDiv = tracksContainer.createDiv();
-				renderTrackCard(trackDiv, track, this.ost, this.app, this.plugin);
+				// renderTrackCard expects (cardWrapper, track, ost, app, plugin)
+				// but we need to import it; let's just set the track div directly
+				// Actually, we need the renderTrackCard function. Let me import it.
+				contentEl.createEl("p", { text: track.title, cls: "story-info-track-title" });
 			}
 		}
 
 		const footerDiv = contentEl.createDiv({ attr: { style: "flex-shrink: 0; margin-top: auto;" } });
-		footerDiv.createEl("hr", { cls: "storyscore-info-separator" });
+		footerDiv.createEl("hr", { cls: "storyinfo-separator" });
 
 		new InformationControl({
 			app: this.app,

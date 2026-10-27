@@ -5,6 +5,7 @@ import {FilesSuggestModal} from "../../components/files-suggest-modal";
 import {getImageFiles} from "../../../core/repository/file-queries";
 import {t} from "../../../i18n";
 import type StoryScorePlugin from "../../../main";
+import { stripWikiLink } from "../../../lib/wiki-link";
 
 export class NewSoundtrackModal extends Modal {
 	trackTitle: string;
@@ -25,8 +26,8 @@ export class NewSoundtrackModal extends Modal {
 				this.trackTitle = (fm.title as string) || this.fileToEdit.basename;
 				this.trackDescription = (fm.description as string) || "";
 				let coverStr = fm.cover as string;
-				if (coverStr && coverStr.startsWith("[[") && coverStr.endsWith("]]")) {
-					coverStr = coverStr.substring(2, coverStr.length - 2);
+				if (coverStr) {
+					coverStr = stripWikiLink(coverStr);
 				}
 				this.trackCover = coverStr || "";
 			}

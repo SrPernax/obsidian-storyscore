@@ -5,6 +5,7 @@ import { updateTrackFile } from "../../../core/services/update-track";
 import { getAudioFiles, getLeitmotifFiles } from "../../../core/repository/file-queries";
 import {FilesSuggestModal} from "../../components/files-suggest-modal";
 import { t } from "../../../i18n";
+import { stripWikiLink } from "../../../lib/wiki-link";
 import { TRACK_TYPES, TRACK_STATUSES } from "../../../core/constants/taxonomy";
 import type StoryScorePlugin from "../../../main";
 
@@ -45,10 +46,10 @@ export class NewTrackModal extends Modal {
 				if (initDieg === "n/a" || initDieg === "mixed") initDieg = "N/A";
 				this.trackDiegesis = initDieg;
 				this.trackStatus = (fm.status as string) || "wip";
-				this.trackAudio = ((fm.audio as string) || "").replace(/^\[\[|\]\]$/g, '');
+				this.trackAudio = stripWikiLink((fm.audio as string) || "");
 				this.selectedAlbumId = (fm.album_id as string) || "none";
 				this.trackLyrics = (fm.lyrics as string) || "";
-				this.associatedLeitmotifs = (fm.leitmotifs as string[])?.map((l: string) => l.replace(/^\[\[|\]\]$/g, '')) || [];
+				this.associatedLeitmotifs = ((fm.leitmotifs as string[]) ?? []).map(stripWikiLink) || [];
 				
 				if (!['ambient', 'character', 'action', 'ui'].includes(this.trackType)) {
 					this.customTrackType = this.trackType;

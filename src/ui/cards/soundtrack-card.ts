@@ -1,8 +1,9 @@
 import { App, setIcon } from 'obsidian';
 import { SoundtrackResult } from '../../core/models/soundtrack-result';
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
-import { SoundtrackInfoModal } from '../modals/info/soundtrack-info';
+import { SoundtrackInfoModal } from '../../modals/info/soundtrack-info';
 import type StoryScorePlugin from '../../main';
+import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
 
 export function renderSoundtrackCard(container: HTMLElement, ost: SoundtrackResult, app: App, plugin: StoryScorePlugin) {
 	container.empty();
@@ -14,9 +15,7 @@ export function renderSoundtrackCard(container: HTMLElement, ost: SoundtrackResu
 	let hasCover = false;
 	if (ost.cover) {
 		let coverPath = ost.cover;
-		if (coverPath.startsWith("[[") && coverPath.endsWith("]]")) {
-			coverPath = coverPath.substring(2, coverPath.length - 2);
-		}
+		coverPath = stripWikiLink(coverPath);
 		
 		const imageFile = app.metadataCache.getFirstLinkpathDest(coverPath, "");
 		if (imageFile) {
@@ -44,17 +43,13 @@ export function renderSoundtrackCard(container: HTMLElement, ost: SoundtrackResu
 		const descEl = infoDiv.createSpan({ cls: "storyscore-track-desc" });
 		const parts = ost.description.split(/(\[\[.*?\]\])/g);
 		parts.forEach(part => {
-			if (part.startsWith('[[') && part.endsWith(']]')) {
-				const inner = part.slice(2, -2);
-				const split = inner.split('|');
-				const linkPath = split[0] || "";
-				const linkAlias = split[1] || linkPath;
-
-				const linkEl = descEl.createEl("a", { text: linkAlias, cls: "internal-link" });
+			const link = parseWikiLink(part);
+			if (link) {
+				const linkEl = descEl.createEl("a", { text: link.alias, cls: "internal-link" });
 				linkEl.addClass("storyscore-track-link-icon");
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					void app.workspace.openLinkText(linkPath, ost.file.path, false);
+					void app.workspace.openLinkText(link.target, ost.file.path, false);
 				};
 			} else if (part.length > 0) {
 				descEl.appendChild(document.createTextNode(part));

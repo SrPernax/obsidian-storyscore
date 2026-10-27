@@ -12,7 +12,8 @@ export const TRACK_STATUSES = [
 	{ id: 'wip', labelKey: 'TRACK_STATUS_WIP' },
 	{ id: 'review', labelKey: 'TRACK_STATUS_REVIEW' },
 	{ id: 'mixing', labelKey: 'TRACK_STATUS_MIXING' },
-	{ id: 'done', labelKey: 'TRACK_STATUS_DONE' }
+	{ id: 'done', labelKey: 'TRACK_STATUS_DONE' },
+	{ id: 'scrapped', labelKey: 'TRACK_STATUS_SCRAPPED' }
 ];
 
 export const LM_TYPES = [
@@ -25,5 +26,7 @@ export const LM_TYPES = [
 export const DIEGESIS_TYPES = [
 	{ id: 'in', labelKey: 'TRACK_DIEGESIS_IN' },
 	{ id: 'out', labelKey: 'TRACK_DIEGESIS_OUT' },
-	{ id: 'mixed', labelKey: 'TRACK_DIEGESIS_MIXED' }
+	{ id: 'mixed', labelKey: 'TRACK_DIEGESIS_MIXED' },
 ];
+
+export const NO_ALBUM_ID = 'none';

@@ -1,7 +1,8 @@
 import { App, setIcon } from 'obsidian';
 import { LeitmotifResult } from '../../core/models/leitmotif-result';
-import { LeitmotifInfoModal } from '../modals/info/leitmotif-info';
+import { LeitmotifInfoModal } from '../../modals/info/leitmotif-info';
 import type StoryScorePlugin from '../../main';
+import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
 
 export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult, app: App, plugin: StoryScorePlugin) {
 	container.empty();
@@ -10,7 +11,7 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 	
 	const lmColor = lm.color || "#808080";
 	cardContainer.style.background = `linear-gradient(135deg, ${lmColor}22 0%, var(--background-secondary) 100%)`;
-	
+
 
 	const infoDiv = cardContainer.createDiv({ cls: "storyscore-track-info" });
 	const titleEl = infoDiv.createEl("h4", { text: lm.title, cls: "resonance-track-title storyscore-track-info-title" });
@@ -26,9 +27,7 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 			if (lm.entityNote) {
 				subtitleEl.appendText(" (");
 				let noteName = lm.entityNote;
-				if (noteName.startsWith("[[") && noteName.endsWith("]]")) {
-					noteName = noteName.substring(2, noteName.length - 2);
-				}
+				noteName = stripWikiLink(noteName);
 				const linkEl = subtitleEl.createEl("a", { text: noteName, cls: "internal-link" });
 				linkEl.style.cursor = "pointer";
 				linkEl.onclick = (e) => {
@@ -50,17 +49,14 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 		const descEl = infoDiv.createSpan({ cls: "storyscore-track-desc" });
 		const parts = lm.description.split(/(\[\[.*?\]\])/g);
 		parts.forEach(part => {
-			if (part.startsWith('[[') && part.endsWith(']]')) {
-				const inner = part.slice(2, -2);
-				const split = inner.split('|');
-				const linkPath = split[0] || "";
-				const linkAlias = split[1] || linkPath;
-
-				const linkEl = descEl.createEl("a", { text: linkAlias, cls: "internal-link" });
-				linkEl.addClass("storyscore-track-link-icon");
+			const link = parseWikiLink(part);
+			if (link) {
+				const linkEl = descEl.createEl("a", { text: link.alias, cls: "internal-link" });
+				linkEl.addClass("internal-link");
+				linkEl.style.cursor = "pointer";
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					void app.workspace.openLinkText(linkPath, lm.file.path, false);
+					void app.workspace.openLinkText(link.target, lm.file.path, false);
 				};
 			} else if (part.length > 0) {
 				descEl.appendChild(document.createTextNode(part));
@@ -73,9 +69,7 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 		audioElement.setAttribute("controls", "true");
 
 		let audioPath = lm.audio;
-		if (audioPath.startsWith("[[") && audioPath.endsWith("]]")) {
-			audioPath = audioPath.substring(2, audioPath.length - 2);
-		}
+		audioPath = stripWikiLink(audioPath);
 		
 		const audioFile = app.metadataCache.getFirstLinkpathDest(audioPath, "");
 		if (audioFile) {
@@ -84,7 +78,7 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 	}
 
 	const rightControls = cardContainer.createDiv({ attr: { style: "display: flex; margin-left: auto; align-items: center;" } });
-	
+
 	const btnInfo = rightControls.createEl("button", { cls: "storyscore-icon-btn", attr: { 'aria-label': 'Info', style: 'padding: 5px 20px;' } });
 	setIcon(btnInfo, "info");
 	btnInfo.onclick = () => {

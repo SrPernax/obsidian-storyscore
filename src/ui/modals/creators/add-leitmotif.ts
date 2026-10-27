@@ -33,15 +33,11 @@ export class NewLeitmotifModal extends Modal {
 				this.motifType = (fm.motif_type as string) || "Melodic motif";
 				
 				let entityNoteStr = fm.entity_note as string;
-				if (entityNoteStr && entityNoteStr.startsWith("[[") && entityNoteStr.endsWith("]]")) {
-					entityNoteStr = entityNoteStr.substring(2, entityNoteStr.length - 2);
-				}
+				entityNoteStr = stripWikiLink(entityNoteStr);
 				this.entityNote = entityNoteStr || "";
 				
 				let audioStr = fm.audio as string;
-				if (audioStr && audioStr.startsWith("[[") && audioStr.endsWith("]]")) {
-					audioStr = audioStr.substring(2, audioStr.length - 2);
-				}
+				audioStr = stripWikiLink(audioStr);
 				this.motifAudio = audioStr || "";
                 this.musicalAnnotations = (fm.musical_annotations as string) || "";
                 this.customEntityType = (fm.custom_entity_type as string) || "";
