@@ -1,20 +1,22 @@
-import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf} from 'obsidian';
+import { Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf } from 'obsidian';
+import { ObsidianStorageAdapter } from './adapters/obsidian-storage';
 import { DEFAULT_SETTINGS, StoryScoreSettings, StoryScoreSettingTab } from './settings';
-import { NewTrackModal } from "./ui/modals/creators/add-track";
-import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/view/manager-view";
-import { NewSoundtrackModal } from "./ui/modals/creators/add-soundtrack";
-import { TrackInsertModal } from "./core/services/insert-track";
-import { SoundtrackInsertModal } from "./core/services/insert-soundtrack";
-import { LeitmotifInsertModal } from "./core/services/insert-leitmotif";
-
-import { NewLeitmotifModal } from "./ui/modals/creators/add-leitmotif";
-import { registerStoryScoreCodeBlock } from "./core/services/codeblock";
-import { t } from "./i18n";
+import { registerStoryScoreCodeBlock } from './ui/codeblock-processor';
+import { NewLeitmotifModal } from './ui/modals/creators/add-leitmotif';
+import { NewSoundtrackModal } from './ui/modals/creators/add-soundtrack';
+import { NewTrackModal } from './ui/modals/creators/add-track';
+import { LeitmotifInsertModal } from './ui/modals/insert/insert-leitmotif';
+import { SoundtrackInsertModal } from './ui/modals/insert/insert-soundtrack';
+import { TrackInsertModal } from './ui/modals/insert/insert-track';
+import { StoryScoreView, VIEW_TYPE_STORYSCORE } from './ui/view/manager-view';
+import { t } from './i18n';
 
 export default class StoryScorePlugin extends Plugin {
 	settings!: StoryScoreSettings;
+	storage!: ObsidianStorageAdapter;
 
 	async onload() {
+		this.storage = new ObsidianStorageAdapter(this.app);
 		await this.loadSettings();
 
 		this.registerView(
@@ -73,8 +75,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-track',
 			name: t('CMD_INSERT_TRACK'),
-
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new TrackInsertModal(this.app, editor, this).open();
 			}
 		});
@@ -82,7 +83,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-ost',
 			name: t('CMD_INSERT_OST') || 'Insert Soundtrack Card',
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new SoundtrackInsertModal(this.app, editor, this).open();
 			}
 		});
@@ -90,7 +91,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-lm',
 			name: t('CMD_INSERT_LM') || 'Insert Leitmotif Card',
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new LeitmotifInsertModal(this.app, editor, this).open();
 			}
 		});
@@ -116,9 +117,7 @@ export default class StoryScorePlugin extends Plugin {
 		void workspace.revealLeaf(leaf);
 	}
 
-	onunload() {
-
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign(

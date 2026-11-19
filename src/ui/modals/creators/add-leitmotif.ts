@@ -1,8 +1,9 @@
-import { App, Modal, Notice, Setting, TextComponent, TFile } from 'obsidian';
-import { getAudioFiles, getMarkdownFiles } from '../../../core/repository/file-queries';
+import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
+import { getAudioFiles, getMarkdownFiles, getTFileByPath } from '../../../adapters/obsidian-storage';
 import { FilesSuggestModal } from '../../components/files-suggest-modal';
 import { createLeitmotifFile } from '../../../core/services/create-leitmotif';
 import { updateLeitmotifFile } from '../../../core/services/update-leitmotif';
+import { stripWikiLink } from '../../../core/parsing/wiki-link';
 import { t } from '../../../i18n';
 import { LM_TYPES } from '../../../core/constants/taxonomy';
 import type StoryScorePlugin from '../../../main';
@@ -18,30 +19,29 @@ export class NewLeitmotifModal extends Modal {
 	musicalAnnotations: string = "";
 	motifColor: string = "#808080";
 
-	constructor(app: App, public fileToEdit: TFile | null = null, public plugin: StoryScorePlugin) {
+	constructor(app: App, public filePathToEdit: string | null = null, public plugin: StoryScorePlugin) {
 		super(app);
 	}
 
 	onOpen() {
-		if (this.fileToEdit) {
-			const cache = this.app.metadataCache.getFileCache(this.fileToEdit);
+		const fileToEdit = this.filePathToEdit ? getTFileByPath(this.app, this.filePathToEdit) : null;
+		if (fileToEdit) {
+			const cache = this.app.metadataCache.getFileCache(fileToEdit);
 			const fm = cache?.frontmatter;
 			if (fm) {
-				this.motifTitle = (fm.title as string) || this.fileToEdit.basename;
+				this.motifTitle = (fm.title as string) || fileToEdit.basename;
 				this.motifDescription = (fm.description as string) || "";
 				this.entityType = (fm.entity_type as string) || "Character";
 				this.motifType = (fm.motif_type as string) || "Melodic motif";
-				
-				let entityNoteStr = fm.entity_note as string;
-				entityNoteStr = stripWikiLink(entityNoteStr);
-				this.entityNote = entityNoteStr || "";
-				
-				let audioStr = fm.audio as string;
-				audioStr = stripWikiLink(audioStr);
-				this.motifAudio = audioStr || "";
-                this.musicalAnnotations = (fm.musical_annotations as string) || "";
-                this.customEntityType = (fm.custom_entity_type as string) || "";
-                this.motifColor = (fm.color as string) || "#808080";
+
+				const entityNoteStr = (fm.entity_note as string) || "";
+				this.entityNote = stripWikiLink(entityNoteStr);
+
+				const audioStr = (fm.audio as string) || "";
+				this.motifAudio = stripWikiLink(audioStr);
+				this.musicalAnnotations = (fm.musical_annotations as string) || "";
+				this.customEntityType = (fm.custom_entity_type as string) || "";
+				this.motifColor = (fm.color as string) || "#808080";
 			}
 		}
 
@@ -63,7 +63,7 @@ export class NewLeitmotifModal extends Modal {
 			return;
 		}
 
-		contentEl.createEl('h2', { text: this.fileToEdit ? t('LM_EDIT_TITLE') : t('LM_ADD_TITLE') });
+		contentEl.createEl('h2', { text: this.filePathToEdit ? t('LM_EDIT_TITLE') : t('LM_ADD_TITLE') });
 
 		new Setting(contentEl)
 			.setName(t('LM_NAME'))
@@ -175,7 +175,7 @@ export class NewLeitmotifModal extends Modal {
 				dropdown.setValue(this.motifType)
 				.onChange(value => {
 					this.motifType = value;
-				})
+				});
 			});
 
 		new Setting(contentEl)
@@ -224,14 +224,16 @@ export class NewLeitmotifModal extends Modal {
 					};
 
 					try {
-                        if (this.fileToEdit) {
-                            await updateLeitmotifFile(this.app, this.fileToEdit, leitmotifData);
-                        } else {
-                            const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
-                            await createLeitmotifFile(this.app, leitmotifData, baseFolder);
-                        }
+						if (this.filePathToEdit) {
+							await updateLeitmotifFile(this.plugin.storage, this.filePathToEdit, leitmotifData);
+						} else {
+							const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
+							await createLeitmotifFile(this.plugin.storage, leitmotifData, baseFolder);
+						}
+						new Notice(t('LM_SAVE_NOTICE', leitmotifData.title));
 						this.close();
 					} catch (e) {
+						new Notice(t('ERROR_SAVE_LM'));
 						console.error(e);
 					}
 				})

@@ -1,7 +1,6 @@
-import { TFile } from "obsidian";
-
 export interface LeitmotifResult {
-	file: TFile;
+	path: string;
+	basename: string;
 	id: string;
 	title: string;
 	description?: string;

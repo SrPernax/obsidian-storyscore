@@ -1,16 +1,16 @@
-import { App, Notice, Modal, setIcon } from 'obsidian';
+import { App, setIcon } from 'obsidian';
+import { openNoteByPath } from '../../adapters/obsidian-storage';
 import { TrackResult } from '../../core/models/track-result';
 import { SoundtrackResult } from '../../core/models/soundtrack-result';
 import { t } from '../../i18n';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/constants/taxonomy';
 import type StoryScorePlugin from '../../main';
-import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
+import { stripWikiLink, parseWikiLink } from '../../core/parsing/wiki-link';
 
 import NsLogo from '../../../assets/plugin/ns-logo.svg';
 import { TrackInfoModal } from '../modals/info/track-info';
 
 export function renderTrackCard(container: HTMLElement, track: TrackResult, ost: SoundtrackResult | undefined, app: App, plugin: StoryScorePlugin) {
-
 	container.empty();
 
 	const playerContainer = container.createDiv({ cls: "resonance-inline-player storyscore-track-card" });
@@ -19,8 +19,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 
 	let hasCover = false;
 	if (ost && ost.cover) {
-		let coverPath = ost.cover;
-		coverPath = stripWikiLink(coverPath);
+		const coverPath = stripWikiLink(ost.cover);
 
 		const imageFile = app.metadataCache.getFirstLinkpathDest(coverPath, "");
 		if (imageFile) {
@@ -41,7 +40,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	const titleEl = infoDiv.createEl("h4", { text: track.title, cls: "resonance-track-title storyscore-track-info-title" });
 	titleEl.style.cursor = "pointer";
 	titleEl.onclick = () => {
-		void app.workspace.getLeaf().openFile(track.file);
+		openNoteByPath(app, track.path);
 	};
 
 	if (track.description) {
@@ -55,7 +54,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 				linkEl.addClass("storyscore-track-link-icon");
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					void app.workspace.openLinkText(link.target, track.file.path, false);
+					void app.workspace.openLinkText(link.target, track.path, false);
 				};
 			} else if (part.length > 0) {
 				descEl.appendChild(document.createTextNode(part));
@@ -65,13 +64,11 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 
 	const typeObj = TRACK_TYPES.find(t => t.id === track.type);
 	let typeStr = track.type;
-	// @ts-ignore
-	if (typeObj) typeStr = t(typeObj.labelKey as unknown);
+	if (typeObj) typeStr = t(typeObj.labelKey as Parameters<typeof t>[0]);
 
 	const statusObj = TRACK_STATUSES.find(s => s.id === track.status);
 	let statusStr = track.status;
-	// @ts-ignore
-	if (statusObj) statusStr = t(statusObj.labelKey as unknown);
+	if (statusObj) statusStr = t(statusObj.labelKey as Parameters<typeof t>[0]);
 
 	const trackType = typeStr ? (typeStr.charAt(0).toUpperCase() + typeStr.slice(1)) : "";
 	const trackStatus = statusStr ? (statusStr.charAt(0).toUpperCase() + statusStr.slice(1)) : "";
@@ -88,8 +85,7 @@ export function renderTrackCard(container: HTMLElement, track: TrackResult, ost:
 	audioElement.setAttribute("controls", "true");
 
 	if (track.audio) {
-		let audioPath = track.audio;
-		audioPath = stripWikiLink(audioPath);
+		const audioPath = stripWikiLink(track.audio);
 
 		const audioFile = app.metadataCache.getFirstLinkpathDest(audioPath, "");
 		if (audioFile) {

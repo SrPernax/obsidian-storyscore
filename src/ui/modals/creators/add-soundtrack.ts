@@ -1,29 +1,31 @@
-import { App, Modal, Notice, Setting, TextComponent, TFile } from 'obsidian';
+import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
+import { getImageFiles, getTFileByPath } from "../../../adapters/obsidian-storage";
 import { createSoundtrackFile } from "../../../core/services/create-soundtrack";
 import { updateSoundtrackFile } from "../../../core/services/update-soundtrack";
-import {FilesSuggestModal} from "../../components/files-suggest-modal";
-import {getImageFiles} from "../../../core/repository/file-queries";
-import {t} from "../../../i18n";
+import { FilesSuggestModal } from "../../components/files-suggest-modal";
+import { t } from "../../../i18n";
 import type StoryScorePlugin from "../../../main";
-import { stripWikiLink } from "../../../lib/wiki-link";
+import { stripWikiLink } from "../../../core/parsing/wiki-link";
 
 export class NewSoundtrackModal extends Modal {
 	trackTitle: string;
 	trackDescription: string;
 	trackCover: string;
 
-	constructor(app: App, public fileToEdit: TFile | null = null, public plugin: StoryScorePlugin) {
+	constructor(app: App, public filePathToEdit: string | null = null, public plugin: StoryScorePlugin) {
 		super(app);
 		this.trackTitle = "";
 		this.trackDescription = "";
 		this.trackCover = "";
 	}
+
 	onOpen() {
-		if (this.fileToEdit) {
-			const cache = this.app.metadataCache.getFileCache(this.fileToEdit);
+		const fileToEdit = this.filePathToEdit ? getTFileByPath(this.app, this.filePathToEdit) : null;
+		if (fileToEdit) {
+			const cache = this.app.metadataCache.getFileCache(fileToEdit);
 			const fm = cache?.frontmatter;
 			if (fm) {
-				this.trackTitle = (fm.title as string) || this.fileToEdit.basename;
+				this.trackTitle = (fm.title as string) || fileToEdit.basename;
 				this.trackDescription = (fm.description as string) || "";
 				let coverStr = fm.cover as string;
 				if (coverStr) {
@@ -40,7 +42,7 @@ export class NewSoundtrackModal extends Modal {
 
 		const imageFiles = getImageFiles(this.app);
 
-		contentEl.createEl('h2', { text: this.fileToEdit ? t('OST_EDIT_TITLE') : t('OST_ADD_TITLE') });
+		contentEl.createEl('h2', { text: this.filePathToEdit ? t('OST_EDIT_TITLE') : t('OST_ADD_TITLE') });
 
 		new Setting(contentEl)
 			.setName(t('OST_NAME'))
@@ -84,7 +86,6 @@ export class NewSoundtrackModal extends Modal {
 				.setButtonText(t('SAVE'))
 				.setCta()
 				.onClick(async () => {
-
 					if (this.trackTitle.trim() === "") {
 						new Notice(t('OST_ERR_NAME'));
 						return;
@@ -93,18 +94,20 @@ export class NewSoundtrackModal extends Modal {
 					const soundtrackData = {
 						title: this.trackTitle,
 						description: this.trackDescription,
-						cover: this.trackCover 
+						cover: this.trackCover
 					};
 
 					try {
-						if (this.fileToEdit) {
-							await updateSoundtrackFile(this.app, this.fileToEdit, soundtrackData);
+						if (this.filePathToEdit) {
+							await updateSoundtrackFile(this.plugin.storage, this.filePathToEdit, soundtrackData);
 						} else {
 							const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
-							await createSoundtrackFile(this.app, soundtrackData, baseFolder);
+							await createSoundtrackFile(this.plugin.storage, soundtrackData, baseFolder);
 						}
+						new Notice(t('OST_SAVE_NOTICE', soundtrackData.title));
 						this.close();
 					} catch (e) {
+						new Notice(t('ERROR_SAVE_OST'));
 						console.error(e);
 					}
 				}));

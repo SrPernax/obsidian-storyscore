@@ -1,42 +1,21 @@
-import { App, Notice } from 'obsidian';
 import { StoryScorePaths } from '../constants/paths';
-import { SoundtrackData } from "../models/soundtrack-data";
-import { t } from "../../i18n";
+import { SoundtrackData } from '../models/soundtrack-data';
+import { buildSoundtrackMarkdown, generateId, safeFileName } from '../parsing/markdown-templates';
+import { IStoryScoreStorage } from '../ports/storage-port';
 
-export async function createSoundtrackFile(app: App, data: SoundtrackData, baseFolder: string): Promise<void> {
-
+export async function createSoundtrackFile(
+	storage: IStoryScoreStorage,
+	data: SoundtrackData,
+	baseFolder: string,
+): Promise<string> {
 	const paths = StoryScorePaths.getPaths(baseFolder);
-	const folderExists = app.vault.getAbstractFileByPath(paths.soundtracks);
+	await storage.ensureFolder(paths.root);
+	await storage.ensureFolder(paths.soundtracks);
 
-	if (!folderExists) {
-		const baseExists = app.vault.getAbstractFileByPath(paths.root);
-		if (!baseExists) await app.vault.createFolder(paths.root);
-		await app.vault.createFolder(paths.soundtracks);
-	}
+	const uniqueId = generateId('ST', 5);
+	const fileContent = buildSoundtrackMarkdown(uniqueId, data);
+	const filePath = `${paths.soundtracks}/${safeFileName(data.title)}.md`;
 
-	const uniqueId = "ST-" + Math.random().toString(36).substring(2, 7);
-
-	const coverField = data.cover ? `\ncover: "[[${data.cover}]]"` : '';
-	const fileContent = `---
-id: ${uniqueId}
-title: "${data.title}"
-description: "${data.description}"${coverField}
----
-                   
-# 🎵 ${data.title}
-                   
-> ${data.description || 'No description.'}
-
-`;
-
-	const safeFileName = data.title.replace(/[\\/:"*?<>|]/g, '');
-	const filePath = `${paths.soundtracks}/${safeFileName}.md`;
-
-	try {
-		await app.vault.create(filePath, fileContent);
-		new Notice(t('OST_SAVE_NOTICE', data.title));
-	} catch (error) {
-		new Notice(t('ERROR_SAVE_OST'));
-		throw error;
-	}
+	await storage.createNote(filePath, fileContent);
+	return filePath;
 }

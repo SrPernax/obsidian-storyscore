@@ -1,9 +1,10 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
-import { getAllTracks } from "../repository/track-queries";
-import { t } from "../../i18n";
-import type StoryScorePlugin from "../../main";
+import { TrackItem } from '../../../core/models/track-item';
+import { formatCodeBlock } from '../../../core/parsing/codeblock-parser';
+import { getAllTracks } from '../../../core/repository/track-queries';
+import { t } from '../../../i18n';
+import type StoryScorePlugin from '../../../main';
 
-import { TrackItem } from "../models/track-item";
 export class TrackInsertModal extends FuzzySuggestModal<TrackItem> {
 	editor: Editor;
 
@@ -16,7 +17,7 @@ export class TrackInsertModal extends FuzzySuggestModal<TrackItem> {
 
 	getItems(): TrackItem[] {
 		const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
-		const tracks = getAllTracks(this.app, baseFolder);
+		const tracks = getAllTracks(this.plugin.storage, baseFolder);
 		return tracks.map(t => ({ id: t.id, name: t.title }));
 	}
 
@@ -24,9 +25,7 @@ export class TrackInsertModal extends FuzzySuggestModal<TrackItem> {
 		return item.name;
 	}
 
-	onChooseItem(item: TrackItem, evt: MouseEvent | KeyboardEvent) {
-		const textToInsert = `\n\`\`\`storyscore\nid: ${item.id}\n\`\`\`\n`;
-
-		this.editor.replaceSelection(textToInsert);
+	onChooseItem(item: TrackItem, _evt: MouseEvent | KeyboardEvent) {
+		this.editor.replaceSelection(formatCodeBlock(item.id));
 	}
 }

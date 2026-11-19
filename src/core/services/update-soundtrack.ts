@@ -1,23 +1,11 @@
-import { App, Notice, TFile } from 'obsidian';
-import { SoundtrackData } from "../models/soundtrack-data";
-import { t } from "../../i18n";
+import { SoundtrackData } from '../models/soundtrack-data';
+import { applySoundtrackFrontmatter } from '../parsing/frontmatter';
+import { IStoryScoreStorage } from '../ports/storage-port';
 
-export async function updateSoundtrackFile(app: App, file: TFile, data: SoundtrackData): Promise<void> {
-	try {
-		await app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
-			frontmatter['title'] = data.title;
-			frontmatter['description'] = data.description;
-			
-			if (data.cover) {
-				frontmatter['cover'] = `[[${data.cover}]]`;
-			} else {
-				delete frontmatter['cover'];
-			}
-		});
-		new Notice(t('OST_SAVE_NOTICE', data.title)); // Using the same notice or we could create an update one.
-	} catch (error) {
-		new Notice(t('ERROR_SAVE_OST'));
-		console.error(error);
-		throw error;
-	}
+export async function updateSoundtrackFile(
+	storage: IStoryScoreStorage,
+	filePath: string,
+	data: SoundtrackData,
+): Promise<void> {
+	await storage.updateNote(filePath, (frontmatter) => applySoundtrackFrontmatter(frontmatter, data));
 }

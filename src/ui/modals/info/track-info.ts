@@ -1,16 +1,15 @@
-// @ts-ignore
 import { App, Modal } from 'obsidian';
-import NsLogo from '../../../assets/plugin/ns-logo.svg';
+import NsLogo from '../../../../assets/plugin/ns-logo.svg';
 import { TrackResult } from '../../../core/models/track-result';
 import { SoundtrackResult } from '../../../core/models/soundtrack-result';
 import StoryScorePlugin from '../../../main';
 import { t } from '../../../i18n';
-import { stripWikiLink } from '../../../lib/wiki-link';
+import { stripWikiLink } from '../../../core/parsing/wiki-link';
 import { TRACK_STATUSES, TRACK_TYPES } from '../../../core/constants/taxonomy';
 import { getLeitmotifById } from '../../../core/repository/leitmotif-queries';
-import { LeitmotifTagButton } from '../../../components/leitmotif-tag';
+import { LeitmotifTagButton } from '../../components/leitmotif-tag';
 import { NewTrackModal } from '../creators/add-track';
-import { InformationControl } from '../../../components/information-control';
+import { InformationControl } from '../../components/information-control';
 
 export class TrackInfoModal extends Modal {
 	track: TrackResult;
@@ -29,20 +28,18 @@ export class TrackInfoModal extends Modal {
 		contentEl.empty();
 		this.modalEl.addClass("storyscore-track-info-modal");
 
-		const header = contentEl.createEl("h2", { text: t('INFO_MODAL_TITLE'), cls: "story-info-header" });
+		contentEl.createEl("h2", { text: t('INFO_MODAL_TITLE'), cls: "story-info-header" });
 
 		contentEl.createEl("hr", { cls: "storyinfo-separator" });
 
 		const topSection = contentEl.createDiv({ cls: "story-info-top-section" });
 
-		// Left: Album Cover
 		const coverBox = topSection.createDiv({ cls: "story-info-cover-box" });
 		const cover = coverBox.createDiv({ cls: "story-info-cover" });
 
 		let hasCover = false;
 		if (this.ost && this.ost.cover) {
-			let coverPath = this.ost.cover;
-			coverPath = stripWikiLink(coverPath);
+			const coverPath = stripWikiLink(this.ost.cover);
 			const imageFile = this.app.metadataCache.getFirstLinkpathDest(coverPath, "");
 			if (imageFile) {
 				const imageUrl = this.app.vault.getResourcePath(imageFile);
@@ -58,7 +55,6 @@ export class TrackInfoModal extends Modal {
 		}
 		coverBox.createDiv({ text: this.track.id, attr: { style: "font-size: 13px; font-family: monospace; color: var(--text-muted); text-align: center; margin-top: 5px;" } });
 
-		// Middle: Details
 		const detailsBox = topSection.createDiv({ cls: "story-info-details" });
 
 		const titleRow = detailsBox.createDiv({ cls: "story-info-row" });
@@ -73,15 +69,13 @@ export class TrackInfoModal extends Modal {
 		descRow.createSpan({ text: t('INFO_DESC') + ":", cls: "story-info-label" });
 		descRow.createSpan({ text: this.track.description || "-", cls: "story-info-value storyinfo-desc-value" });
 
-		// Audio
 		const audioElement = contentEl.createEl("audio", { cls: "story-info-audio storyscore-track-audio storyinfo-audio" });
 		audioElement.setAttribute("controls", "true");
 		audioElement.style.width = "100%";
 		audioElement.style.marginTop = "5px";
 
 		if (this.track.audio) {
-			let audioPath = this.track.audio;
-			audioPath = stripWikiLink(audioPath);
+			const audioPath = stripWikiLink(this.track.audio);
 
 			const audioFile = this.app.metadataCache.getFirstLinkpathDest(audioPath, "");
 			if (audioFile) {
@@ -91,21 +85,17 @@ export class TrackInfoModal extends Modal {
 
 		contentEl.createEl("hr", { cls: "storyinfo-separator" });
 
-		// Bottom Section
 		const bottomSection = contentEl.createDiv({ cls: "story-info-bottom-section" });
 
 		const leftPanel = bottomSection.createDiv({ cls: "story-info-left-panel" });
 
-		// Map values
 		const typeObj = TRACK_TYPES.find(t => t.id === this.track.type);
 		let typeStr = this.track.type;
-		// @ts-ignore
-		if (typeObj) typeStr = t(typeObj.labelKey as unknown);
+		if (typeObj) typeStr = t(typeObj.labelKey as Parameters<typeof t>[0]);
 
 		const statusObj = TRACK_STATUSES.find(s => s.id === this.track.status);
 		let statusStr = this.track.status;
-		// @ts-ignore
-		if (statusObj) statusStr = t(statusObj.labelKey as unknown);
+		if (statusObj) statusStr = t(statusObj.labelKey as Parameters<typeof t>[0]);
 
 		let diegesisStr = this.track.diegesis;
 		if (diegesisStr === "diegetic" || diegesisStr === "in") diegesisStr = "Diegético";
@@ -129,7 +119,7 @@ export class TrackInfoModal extends Modal {
 
 			this.track.leitmotifs.forEach(lm => {
 				const lmClean = stripWikiLink(lm);
-				const lmResult = getLeitmotifById(this.app, baseFolder, lmClean);
+				const lmResult = getLeitmotifById(this.plugin.storage, baseFolder, lmClean);
 				if (lmResult) {
 					new LeitmotifTagButton(this.app, lmsBox, lmResult, this.plugin, () => {
 						this.close();
@@ -141,7 +131,6 @@ export class TrackInfoModal extends Modal {
 		} else {
 			lmsBox.setText("-");
 		}
-
 
 		if (this.track.lyrics) {
 			const rightPanel = bottomSection.createDiv({ cls: "story-info-right-panel" });
@@ -157,10 +146,10 @@ export class TrackInfoModal extends Modal {
 			app: this.app,
 			plugin: this.plugin,
 			containerEl: contentEl,
-			file: this.track.file,
+			filePath: this.track.path,
 			id: this.track.id,
 			title: this.track.title,
-			onEdit: () => new NewTrackModal(this.app, this.track.file, this.plugin).open(),
+			onEdit: () => new NewTrackModal(this.app, this.track.path, this.plugin).open(),
 			onCloseModal: () => this.close()
 		});
 	}

@@ -5,13 +5,13 @@ import { renderLeitmotifCard } from '../cards/leitmotif-card';
 import { t } from '../../i18n';
 
 export function renderLeitmotifList(
-	container: HTMLElement, 
-	app: App, 
+	container: HTMLElement,
+	app: App,
 	plugin: StoryScorePlugin
 ) {
 	container.empty();
 	const baseFolder = plugin.settings.baseFolder || 'StoryScore';
-	const lmList = getLeitmotifs(app, baseFolder);
+	const lmList = getLeitmotifs(plugin.storage, baseFolder);
 
 	const listContainer = container.createDiv({ cls: 'storyscore-track-list-container' });
 

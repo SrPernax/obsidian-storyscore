@@ -1,23 +1,23 @@
 import { App, setIcon } from 'obsidian';
+import { openNoteByPath } from '../../adapters/obsidian-storage';
 import { LeitmotifResult } from '../../core/models/leitmotif-result';
 import { LeitmotifInfoModal } from '../../ui/modals/info/leitmotif-info';
 import type StoryScorePlugin from '../../main';
-import { stripWikiLink, parseWikiLink } from '../../lib/wiki-link';
+import { stripWikiLink, parseWikiLink } from '../../core/parsing/wiki-link';
 
 export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult, app: App, plugin: StoryScorePlugin) {
 	container.empty();
 
 	const cardContainer = container.createDiv({ cls: "resonance-inline-player storyscore-track-card storyscore-leitmotif-card" });
-	
+
 	const lmColor = lm.color || "#808080";
 	cardContainer.style.background = `linear-gradient(135deg, ${lmColor}22 0%, var(--background-secondary) 100%)`;
-
 
 	const infoDiv = cardContainer.createDiv({ cls: "storyscore-track-info" });
 	const titleEl = infoDiv.createEl("h4", { text: lm.title, cls: "resonance-track-title storyscore-track-info-title" });
 	titleEl.style.cursor = "pointer";
 	titleEl.onclick = () => {
-		void app.workspace.getLeaf().openFile(lm.file);
+		openNoteByPath(app, lm.path);
 	};
 
 	if (lm.entityType || lm.motifType) {
@@ -26,13 +26,12 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 			subtitleEl.appendText(lm.entityType);
 			if (lm.entityNote) {
 				subtitleEl.appendText(" (");
-				let noteName = lm.entityNote;
-				noteName = stripWikiLink(noteName);
+				const noteName = stripWikiLink(lm.entityNote);
 				const linkEl = subtitleEl.createEl("a", { text: noteName, cls: "internal-link" });
 				linkEl.style.cursor = "pointer";
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					void app.workspace.openLinkText(noteName, lm.file.path, false);
+					void app.workspace.openLinkText(noteName, lm.path, false);
 				};
 				subtitleEl.appendText(")");
 			}
@@ -56,7 +55,7 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 				linkEl.style.cursor = "pointer";
 				linkEl.onclick = (e) => {
 					e.preventDefault();
-					void app.workspace.openLinkText(link.target, lm.file.path, false);
+					void app.workspace.openLinkText(link.target, lm.path, false);
 				};
 			} else if (part.length > 0) {
 				descEl.appendChild(document.createTextNode(part));
@@ -68,9 +67,8 @@ export function renderLeitmotifCard(container: HTMLElement, lm: LeitmotifResult,
 		const audioElement = infoDiv.createEl("audio", { cls: "storyscore-track-audio", attr: { style: "width: 100%; margin-top: 10px;" } });
 		audioElement.setAttribute("controls", "true");
 
-		let audioPath = lm.audio;
-		audioPath = stripWikiLink(audioPath);
-		
+		const audioPath = stripWikiLink(lm.audio);
+
 		const audioFile = app.metadataCache.getFirstLinkpathDest(audioPath, "");
 		if (audioFile) {
 			audioElement.src = app.vault.getResourcePath(audioFile);

@@ -1,22 +1,16 @@
-import { App, TFile } from "obsidian";
-import { SoundtrackResult } from "../models/soundtrack-result";
-import { getSoundtrackFiles } from "./file-queries";
+import { StoryScorePaths } from '../constants/paths';
+import { SoundtrackResult } from '../models/soundtrack-result';
+import { soundtrackResultFromEntry } from '../parsing/frontmatter';
+import { IStoryScoreStorage } from '../ports/storage-port';
 
-export function getSoundtracks(app: App, baseFolder: string): SoundtrackResult[] {
+export function getSoundtracks(storage: IStoryScoreStorage, baseFolder: string): SoundtrackResult[] {
+	const paths = StoryScorePaths.getPaths(baseFolder);
+	const entries = storage.listNotesInFolder(paths.soundtracks);
 
-	const soundtrackFiles = getSoundtrackFiles(app, baseFolder);
+	return entries.map(soundtrackResultFromEntry);
+}
 
-	return soundtrackFiles.map((file: TFile) => {
-		const cache = app.metadataCache.getFileCache(file);
-		const fm = cache?.frontmatter;
-		const frontmatterId = (fm?.id as string) || file.path;
-
-		return {
-			file: file,
-			id: frontmatterId,
-			title: (fm?.title as string) || file.basename,
-			description: fm?.description as string | undefined,
-			cover: fm?.cover as string | undefined
-		};
-	});
+export function getSoundtrackById(storage: IStoryScoreStorage, baseFolder: string, id: string): SoundtrackResult | undefined {
+	const allSoundtracks = getSoundtracks(storage, baseFolder);
+	return allSoundtracks.find(ost => ost.id === id || ost.basename === id || ost.title === id);
 }

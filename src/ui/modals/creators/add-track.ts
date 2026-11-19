@@ -1,11 +1,11 @@
-import { App, Modal, Notice, Setting, TFile, TextComponent } from 'obsidian';
+import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
+import { getAudioFiles, getLeitmotifFiles, getTFileByPath } from "../../../adapters/obsidian-storage";
 import { getSoundtracks } from "../../../core/repository/soundtrack-queries";
 import { createTrackFile } from "../../../core/services/create-track";
 import { updateTrackFile } from "../../../core/services/update-track";
-import { getAudioFiles, getLeitmotifFiles } from "../../../core/repository/file-queries";
-import {FilesSuggestModal} from "../../components/files-suggest-modal";
+import { FilesSuggestModal } from "../../components/files-suggest-modal";
 import { t } from "../../../i18n";
-import { stripWikiLink } from "../../../lib/wiki-link";
+import { stripWikiLink } from "../../../core/parsing/wiki-link";
 import { TRACK_TYPES, TRACK_STATUSES } from "../../../core/constants/taxonomy";
 import type StoryScorePlugin from "../../../main";
 
@@ -22,7 +22,7 @@ export class NewTrackModal extends Modal {
 	trackAudio: string = "";
 	associatedLeitmotifs: string[] = [];
 
-	constructor(app: App, public existingFile: TFile | undefined, public plugin: StoryScorePlugin) {
+	constructor(app: App, public existingFilePath: string | undefined, public plugin: StoryScorePlugin) {
 		super(app);
 		this.trackTitle = "";
 		this.trackDescription = "";
@@ -32,8 +32,9 @@ export class NewTrackModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		if (this.existingFile) {
-			const cache = this.app.metadataCache.getFileCache(this.existingFile);
+		const existingFile = this.existingFilePath ? getTFileByPath(this.app, this.existingFilePath) : null;
+		if (existingFile) {
+			const cache = this.app.metadataCache.getFileCache(existingFile);
 			const fm = cache?.frontmatter;
 			if (fm) {
 				this.trackTitle = (fm.title as string) || "";
@@ -49,7 +50,7 @@ export class NewTrackModal extends Modal {
 				this.selectedAlbumId = (fm.album_id as string) || "none";
 				this.trackLyrics = (fm.lyrics as string) || "";
 				this.associatedLeitmotifs = ((fm.leitmotifs as string[]) ?? []).map(stripWikiLink) || [];
-				
+
 				if (!['ambient', 'character', 'action', 'ui'].includes(this.trackType)) {
 					this.customTrackType = this.trackType;
 					this.trackType = "custom";
@@ -59,10 +60,9 @@ export class NewTrackModal extends Modal {
 
 		const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
 
-		const ostList = getSoundtracks(this.app, baseFolder);
+		const ostList = getSoundtracks(this.plugin.storage, baseFolder);
 		const audioFiles = getAudioFiles(this.app);
 		const leitmotifFiles = getLeitmotifFiles(this.app, baseFolder);
-
 
 		if (audioFiles.length === 0) {
 			contentEl.createEl('h2', { text: t('LM_NO_AUDIO_TITLE') || 'Hold on!' });
@@ -76,10 +76,8 @@ export class NewTrackModal extends Modal {
 			return;
 		}
 
+		contentEl.createEl('h2', { text: this.existingFilePath ? t('TRACK_EDIT_TITLE') : t('TRACK_ADD_TITLE') });
 
-
-		contentEl.createEl('h2', { text: this.existingFile ? t('TRACK_EDIT_TITLE') : t('TRACK_ADD_TITLE') });
-		
 		contentEl.createEl('h5', { text: t('TRACK_MAIN_SECTION'), cls: 'storyscore-section-header' });
 
 		new Setting(contentEl)
@@ -109,7 +107,6 @@ export class NewTrackModal extends Modal {
 		new Setting(contentEl)
 			.setName(t('TRACK_AUDIO'))
 			.setDesc(t('TRACK_AUDIO_DESC'))
-
 			.addText(text => {
 				audioInputComponent = text;
 				text.setPlaceholder(t('TRACK_AUDIO_PLACEHOLDER'));
@@ -118,18 +115,16 @@ export class NewTrackModal extends Modal {
 					text.setValue(this.trackAudio);
 				}
 			})
-			
 			.addButton(btn => btn
 				.setButtonText(t('SEARCH'))
 				.onClick(() => {
-
 					new FilesSuggestModal(this.app, audioFiles, t('TRACK_AUDIO_DESC'), (selectedFile) => {
 						this.trackAudio = selectedFile.name;
 						audioInputComponent.setValue(selectedFile.name);
 					}).open();
 				})
 			);
-		
+
 		new Setting(contentEl)
 			.setName(t('TRACK_ALBUM'))
 			.setDesc(t('TRACK_ALBUM_DESC'))
@@ -160,7 +155,7 @@ export class NewTrackModal extends Modal {
 					} else {
 						customTypeSetting.settingEl.hide();
 					}
-				})
+				});
 			});
 
 		const customTypeSetting = new Setting(contentEl)
@@ -200,7 +195,7 @@ export class NewTrackModal extends Modal {
 				dropDown.setValue(this.trackStatus)
 				.onChange((value) => {
 					this.trackStatus = value;
-				})
+				});
 			});
 
 		new Setting(contentEl)
@@ -240,10 +235,9 @@ export class NewTrackModal extends Modal {
 
 		new Setting(contentEl)
 			.addButton(btn => btn
-				.setButtonText(this.existingFile ? t('UPDATE') : t('SAVE'))
+				.setButtonText(this.existingFilePath ? t('UPDATE') : t('SAVE'))
 				.setCta()
 				.onClick(async () => {
-
 					if (this.trackTitle.trim() === "") {
 						new Notice(t('TRACK_ERR_TITLE'));
 						return;
@@ -263,21 +257,23 @@ export class NewTrackModal extends Modal {
 						diegetic: this.trackDiegesis,
 						albumId: this.selectedAlbumId,
 						audio: this.trackAudio,
-						/* cover: this.trackCover, */
 						leitmotifs: this.associatedLeitmotifs
 					};
 
 					try {
 						const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
 
-						if (this.existingFile) {
-							await updateTrackFile(this.app, this.existingFile, trackData);
+						if (this.existingFilePath) {
+							await updateTrackFile(this.plugin.storage, this.existingFilePath, trackData);
+							new Notice(t('TRACK_UPDATE_NOTICE', trackData.title));
 						} else {
-							await createTrackFile(this.app, trackData, baseFolder);
+							await createTrackFile(this.plugin.storage, trackData, baseFolder);
+							new Notice(t('TRACK_SAVE_NOTICE', trackData.title));
 						}
 
 						this.close();
 					} catch (e) {
+						new Notice(this.existingFilePath ? t('ERROR_UPDATE_TRACK') : t('ERROR_SAVE_TRACK'));
 						console.error(e);
 					}
 				}));

@@ -1,32 +1,16 @@
-import { App, TFile } from "obsidian";
-import { LeitmotifResult } from "../models/leitmotif-result";
-import { getLeitmotifFiles } from "./file-queries";
+import { StoryScorePaths } from '../constants/paths';
+import { LeitmotifResult } from '../models/leitmotif-result';
+import { leitmotifResultFromEntry } from '../parsing/frontmatter';
+import { IStoryScoreStorage } from '../ports/storage-port';
 
-export function getLeitmotifs(app: App, baseFolder: string): LeitmotifResult[] {
-	const leitmotifFiles = getLeitmotifFiles(app, baseFolder);
+export function getLeitmotifs(storage: IStoryScoreStorage, baseFolder: string): LeitmotifResult[] {
+	const paths = StoryScorePaths.getPaths(baseFolder);
+	const entries = storage.listNotesInFolder(paths.leitmotifs);
 
-	return leitmotifFiles.map((file: TFile) => {
-		const cache = app.metadataCache.getFileCache(file);
-		const fm = cache?.frontmatter;
-		const frontmatterId = (fm?.id as string) || file.path;
-
-		return {
-			file: file,
-			id: frontmatterId,
-			title: (fm?.title as string) || file.basename,
-			description: fm?.description as string | undefined,
-			entityType: fm?.entity_type as string | undefined,
-			entityNote: fm?.entity_note as string | undefined,
-			motifType: fm?.motif_type as string | undefined,
-			audio: fm?.audio as string | undefined,
-			musicalAnnotations: fm?.musical_annotations as string || "",
-			color: fm?.color as string | undefined,
-			customEntityType: fm?.custom_entity_type as string | undefined
-		};
-	});
+	return entries.map(leitmotifResultFromEntry);
 }
 
-export function getLeitmotifById(app: App, baseFolder: string, id: string): LeitmotifResult | undefined {
-	const allLeitmotifs = getLeitmotifs(app, baseFolder);
-	return allLeitmotifs.find(lm => lm.id === id || lm.file.basename === id || lm.title === id);
+export function getLeitmotifById(storage: IStoryScoreStorage, baseFolder: string, id: string): LeitmotifResult | undefined {
+	const allLeitmotifs = getLeitmotifs(storage, baseFolder);
+	return allLeitmotifs.find(lm => lm.id === id || lm.basename === id || lm.title === id);
 }

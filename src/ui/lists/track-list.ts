@@ -6,20 +6,19 @@ import { renderTrackCard } from '../cards/track-card';
 import { t } from '../../i18n';
 
 export function renderTrackList(
-	container: HTMLElement, 
-	app: App, 
-	plugin: StoryScorePlugin, 
-	currentAlbumFilter: string, 
+	container: HTMLElement,
+	app: App,
+	plugin: StoryScorePlugin,
+	currentAlbumFilter: string,
 	onFilterChange: (newFilter: string) => void
 ) {
 	container.empty();
 	const baseFolder = plugin.settings.baseFolder || 'StoryScore';
-	const ostList = getSoundtracks(app, baseFolder);
-	const trackList = getAllTracks(app, baseFolder);
+	const ostList = getSoundtracks(plugin.storage, baseFolder);
+	const trackList = getAllTracks(plugin.storage, baseFolder);
 
 	const trackListContainer = container.createDiv({ cls: 'storyscore-track-list-container' });
 
-	// Filter dropdown
 	const projectSelect = trackListContainer.createEl('select', { cls: 'dropdown storyscore-project-select' });
 	projectSelect.createEl('option', { text: t('MANAGER_ALL_TRACKS'), value: 'all' });
 
