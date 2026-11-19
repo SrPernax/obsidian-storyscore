@@ -1,17 +1,17 @@
 import { App } from 'obsidian';
 import type StoryScorePlugin from '../../main';
-import { getLeitmotifs } from '../../core/queries/leitmotif-queries';
+import { getLeitmotifs } from '../../core/repository/leitmotif-queries';
 import { renderLeitmotifCard } from '../cards/leitmotif-card';
-import { t } from '../../locales/lenguajes';
+import { t } from '../../localization';
 
 export function renderLeitmotifList(
-	container: HTMLElement, 
-	app: App, 
+	container: HTMLElement,
+	app: App,
 	plugin: StoryScorePlugin
 ) {
 	container.empty();
 	const baseFolder = plugin.settings.baseFolder || 'StoryScore';
-	const lmList = getLeitmotifs(app, baseFolder);
+	const lmList = getLeitmotifs(plugin.storage, baseFolder);
 
 	const listContainer = container.createDiv({ cls: 'storyscore-track-list-container' });
 

@@ -1,25 +1,22 @@
-import {Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf} from 'obsidian';
+import { Editor, MarkdownView, MarkdownFileInfo, Plugin, WorkspaceLeaf } from 'obsidian';
+import { ObsidianStorageAdapter } from './adapters/obsidian-storage';
 import { DEFAULT_SETTINGS, StoryScoreSettings, StoryScoreSettingTab } from './settings';
-import { NewTrackModal } from "./ui/creators/add-track";
-import { StoryScoreView, VIEW_TYPE_STORYSCORE } from "./ui/manager";
-import { NewSoundtrackModal } from "./ui/creators/add-sountrack";
-import { TrackInsertModal } from "./core/commands/insert-track";
-import { SoundtrackInsertModal } from "./core/commands/insert-soundtrack";
-import { LeitmotifInsertModal } from "./core/commands/insert-leitmotif";
-
-import {renderTrackCard} from "./ui/cards/track-card";
-import {renderSoundtrackCard} from "./ui/cards/soundtrack-card";
-import {renderLeitmotifCard} from "./ui/cards/leitmotif-card";
-import {getTrackById} from "./core/queries/track-queries";
-import {getSoundtrackById} from "./core/queries/soundtrack-queries";
-import {getLeitmotifById} from "./core/queries/leitmotif-queries";
-import { NewLeitmotifModal } from "./ui/creators/add-leitmotif";
-import { t } from "./locales/lenguajes";
+import { registerStoryScoreCodeBlock } from './ui/codeblock-processor';
+import { NewLeitmotifModal } from './ui/modals/creators/add-leitmotif';
+import { NewSoundtrackModal } from './ui/modals/creators/add-soundtrack';
+import { NewTrackModal } from './ui/modals/creators/add-track';
+import { LeitmotifInsertModal } from './ui/modals/insert/insert-leitmotif';
+import { SoundtrackInsertModal } from './ui/modals/insert/insert-soundtrack';
+import { TrackInsertModal } from './ui/modals/insert/insert-track';
+import { StoryScoreView, VIEW_TYPE_STORYSCORE } from './ui/view/manager-view';
+import { t } from './localization';
 
 export default class StoryScorePlugin extends Plugin {
 	settings!: StoryScoreSettings;
+	storage!: ObsidianStorageAdapter;
 
 	async onload() {
+		this.storage = new ObsidianStorageAdapter(this.app);
 		await this.loadSettings();
 
 		this.registerView(
@@ -78,8 +75,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-track',
 			name: t('CMD_INSERT_TRACK'),
-			
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new TrackInsertModal(this.app, editor, this).open();
 			}
 		});
@@ -87,7 +83,7 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-ost',
 			name: t('CMD_INSERT_OST') || 'Insert Soundtrack Card',
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new SoundtrackInsertModal(this.app, editor, this).open();
 			}
 		});
@@ -95,54 +91,14 @@ export default class StoryScorePlugin extends Plugin {
 		this.addCommand({
 			id: 'insert-lm',
 			name: t('CMD_INSERT_LM') || 'Insert Leitmotif Card',
-			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: (editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
 				new LeitmotifInsertModal(this.app, editor, this).open();
 			}
 		});
-		
+
 		this.addSettingTab(new StoryScoreSettingTab(this.app, this));
 
-		this.registerMarkdownCodeBlockProcessor("storyscore", (source, el, ctx) => {
-			let inputId = source.trim();
-
-			if (inputId.toLowerCase().startsWith('id:')) {
-				inputId = inputId.substring(3).trim();
-			} else if (inputId.toLowerCase().startsWith('st:')) {
-				inputId = inputId.substring(3).trim();
-			} else if (inputId.toLowerCase().startsWith('ost:')) {
-				inputId = inputId.substring(4).trim();
-			}
-			
-			const baseFolder = this.settings.baseFolder || 'StoryScore';
-			
-			if (inputId.startsWith('LM-')) {
-				const lm = getLeitmotifById(this.app, baseFolder, inputId);
-				if (lm) {
-					renderLeitmotifCard(el, lm, this.app, this);
-				} else {
-					el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-				}
-				return;
-			}
-			
-			if (inputId.startsWith('ST-')) {
-				const ost = getSoundtrackById(this.app, baseFolder, inputId);
-				if (ost) {
-					renderSoundtrackCard(el, ost, this.app, this);
-				} else {
-					el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-				}
-				return;
-			}
-			
-			const track = getTrackById(this.app, baseFolder, inputId);
-			if (track) {
-				const ost = getSoundtrackById(this.app, baseFolder, track.albumId);
-				renderTrackCard(el, track, ost, this.app, this);
-			} else {
-				el.createEl("p", { text: t('CODEBLOCK_ERR', inputId), cls: "resonance-error" });
-			}
-		});
+		registerStoryScoreCodeBlock(this);
 	}
 
 	async activateView() {
@@ -161,9 +117,7 @@ export default class StoryScorePlugin extends Plugin {
 		void workspace.revealLeaf(leaf);
 	}
 
-	onunload() {
-		
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign(

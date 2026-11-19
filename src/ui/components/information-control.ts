@@ -1,5 +1,6 @@
-import { App, Notice, TFile } from "obsidian";
-import { t } from "../../locales/lenguajes";
+import { App, Notice } from "obsidian";
+import { openNoteByPath } from "../../adapters/obsidian-storage";
+import { t } from "../../localization";
 import { ConfirmDeleteModal } from "./confirm-delete";
 import type StoryScorePlugin from "../../main";
 
@@ -7,7 +8,7 @@ export interface InformationControlProps {
 	app: App;
 	plugin: StoryScorePlugin;
 	containerEl: HTMLElement;
-	file: TFile;
+	filePath: string;
 	id: string;
 	title: string;
 	onEdit: () => void;
@@ -28,12 +29,12 @@ export class InformationControl {
 		const btnMd = buttonsBox.createEl("button", { text: t('INFO_MODAL_MD'), cls: "storyscore-info-btn" });
 		btnMd.onclick = () => {
 			props.onCloseModal();
-			props.app.workspace.getLeaf(false).openFile(props.file);
+			openNoteByPath(props.app, props.filePath, false);
 		};
 
 		const btnCopyId = buttonsBox.createEl("button", { text: t('INFO_MODAL_COPY_ID'), cls: "storyscore-info-btn" });
 		btnCopyId.onclick = () => {
-			navigator.clipboard.writeText(props.id).then(() => {
+			void navigator.clipboard.writeText(props.id).then(() => {
 				new Notice(t('INFO_MODAL_COPIED_ID'));
 			});
 		};
@@ -45,7 +46,7 @@ export class InformationControl {
 			if (props.onDelete) {
 				props.onDelete();
 			} else {
-				new ConfirmDeleteModal(props.app, props.file, props.title).open();
+				new ConfirmDeleteModal(props.app, props.filePath, props.title).open();
 			}
 		};
 	}

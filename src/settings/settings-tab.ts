@@ -1,0 +1,195 @@
+import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsidian';
+import StoryScorePlugin from '../main';
+import { t } from '../localization';
+
+import LogoBlack from '../../assets/plugin/logo-black.svg';
+import LogoWhite from '../../assets/plugin/logo-white.svg';
+import PernaxLogo from '../../assets/plugin/pernax-logo.svg';
+
+export class StoryScoreSettingTab extends PluginSettingTab {
+	plugin: StoryScorePlugin;
+	activeTab: 'news' | 'folders' | 'help' | 'design' = 'news';
+
+	constructor(app: App, plugin: StoryScorePlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
+	display(): void {
+		const { containerEl } = this;
+		containerEl.empty();
+		
+		const headerBox = containerEl.createDiv({ cls: 'storyscore-settings-header' });
+
+		const isDarkTheme = document.body.classList.contains('theme-dark');
+		const logoData = "data:image/svg+xml;base64," + (isDarkTheme ? LogoWhite : LogoBlack);
+		
+		const logo = headerBox.createEl('img', { cls: 'storyscore-settings-logo' });
+		logo.src = logoData;
+
+		const textContainer = headerBox.createDiv({ cls: 'storyscore-settings-title-box' });
+		textContainer.createSpan({ text: 'StoryScore', cls: 'storyscore-settings-title' });
+		textContainer.createSpan({ text: `v${this.plugin.manifest.version}`, cls: 'storyscore-settings-version' });
+		
+		const wrapper = containerEl.createDiv({ cls: 'storyscore-settings-wrapper' });
+		
+		const sidebar = wrapper.createDiv({ cls: 'storyscore-settings-sidebar' });
+		
+		this.createSidebarButton(sidebar, 'star', t('SETTINGS_TAB_NEWS'), 'news');
+		this.createSidebarButton(sidebar, 'folder', t('SETTINGS_TAB_FOLDERS'), 'folders');
+		this.createSidebarButton(sidebar, 'brush', t('SETTINGS_TAB_DESIGN'), 'design');
+		this.createSidebarButton(sidebar, 'help-circle', t('SETTINGS_TAB_HELP'), 'help');
+		
+		const footer = sidebar.createDiv({ cls: 'storyscore-settings-footer' });
+		
+		const pernaxImg = footer.createEl('img', { cls: 'storyscore-settings-pernax-logo' });
+		pernaxImg.src = "data:image/svg+xml;base64," + PernaxLogo;
+		
+		footer.createSpan({ text: t('SETTINGS_CREATED_BY') });
+		const authorBtn = footer.createEl('button', { text: 'Pernax', cls: 'storyscore-settings-author-btn' });
+		authorBtn.onclick = () => window.open("https://github.com/SrPernax");
+		
+		const content = wrapper.createDiv({ cls: 'storyscore-settings-content' });
+		
+		if (this.activeTab === 'news') {
+			this.renderNewsTab(content);
+		} else if (this.activeTab === 'folders') {
+			this.renderFoldersTab(content);
+		} else if (this.activeTab === 'design') {
+			this.renderDesignTab(content);
+		} else if (this.activeTab === 'help') {
+			this.renderHelpTab(content);
+		}
+	}
+	
+	createSidebarButton(container: HTMLElement, iconId: string, label: string, tabId: 'news' | 'folders' | 'help' | 'design') {
+		const btn = container.createEl('button', { cls: 'storyscore-settings-tab-btn' });
+		if (this.activeTab === tabId) {
+			btn.addClass('is-active');
+		}
+		
+		const iconEl = btn.createSpan();
+		setIcon(iconEl, iconId);
+		btn.createSpan({ text: label });
+		
+		btn.onclick = () => {
+			this.activeTab = tabId;
+			this.display();
+		};
+	}
+	
+	renderFoldersTab(container: HTMLElement) {
+		new Setting(container)
+			.setName(t('SETTINGS_BASE_FOLDER_NAME'))
+			.setDesc(t('SETTINGS_BASE_FOLDER_DESC'))
+			.addText((text) =>
+				text
+					.setPlaceholder(t('SETTINGS_BASE_FOLDER_PLACEHOLDER'))
+					.setValue(this.plugin.settings.baseFolder)
+					.onChange(async (value) => {
+						this.plugin.settings.baseFolder = value.trim() || 'StoryScore';
+						await this.plugin.saveSettings();
+					}),
+			);
+	}
+	
+	renderNewsTab(container: HTMLElement) {
+		const changelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 20px;' } });
+		changelogBox.createEl('h3', { text: t('SETTINGS_NEWS_TITLE') });
+		
+		const list = changelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		list.createEl('li', { text: t('SETTINGS_NEWS_1') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_2') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_3') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_4') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_5') });
+		list.createEl('li', { text: t('SETTINGS_NEWS_6') });
+
+		const oldChangelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; opacity: 0.8;' } });
+		oldChangelogBox.createEl('h3', { text: t('SETTINGS_NEWS_OLD_1_0_1_TITLE') });
+		
+		const oldList = oldChangelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		oldList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_1_1') });
+		oldList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_1_2') });
+
+		const launchChangelogBox = container.createDiv({ cls: 'storyscore-changelog-box', attr: { style: 'padding: 10px; background: var(--background-secondary); border-radius: 8px; opacity: 0.6; margin-top: 20px;' } });
+		launchChangelogBox.createEl('h3', { text: t('SETTINGS_NEWS_OLD_1_0_0_TITLE') });
+		
+		const launchList = launchChangelogBox.createEl('ul', { attr: { style: 'margin-left: 20px; margin-bottom: 0;' } });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_1') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_2') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_3') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_4') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_5') });
+		launchList.createEl('li', { text: t('SETTINGS_NEWS_OLD_1_0_0_6') });
+	}
+
+	renderDesignTab(container: HTMLElement) {
+		new Setting(container)
+			.setName(t('SETTINGS_COMPACT_MODE'))
+			.setDesc(t('SETTINGS_COMPACT_MODE_DESC'))
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.compactMode)
+				.onChange(async (value) => {
+					this.plugin.settings.compactMode = value;
+					await this.plugin.saveSettings();
+				})
+			);
+	}
+
+	renderHelpTab(container: HTMLElement) {
+
+		
+		const guides = [
+			{ title: t('HELP_GUIDE1_TITLE'), desc: t('HELP_GUIDE1_DESC') },
+			{ title: t('HELP_GUIDE2_TITLE'), desc: t('HELP_GUIDE2_DESC') },
+			{ title: t('HELP_GUIDE3_TITLE'), desc: t('HELP_GUIDE3_DESC') },
+			{ title: t('HELP_GUIDE4_TITLE'), desc: t('HELP_GUIDE4_DESC') },
+			{ title: t('HELP_GUIDE5_TITLE'), desc: t('HELP_GUIDE5_DESC') }
+		];
+		
+		for(const guide of guides) {
+			const details = container.createEl('details', { cls: 'storyscore-help-guide' });
+			const summary = details.createEl('summary', { cls: 'storyscore-help-guide-summary' });
+			summary.setText(guide.title);
+			
+			const contentDiv = details.createDiv({ cls: 'storyscore-help-guide-content' });
+			contentDiv.appendChild(sanitizeHTMLToDom(guide.desc));
+		}
+		
+
+		const s1 = new Setting(container)
+			.setName(t('HELP_SUPPORT_DEV'))
+			.setDesc(t('HELP_SUPPORT_DEV_DESC'))
+			.addButton(btn => btn.setButtonText(t('HELP_BUY_COFFEE')).onClick(() => {
+				window.open("https://ko-fi.com/pernax");
+			}));
+		const i1 = s1.nameEl.createSpan({ cls: 'storyscore-help-icon' });
+		setIcon(i1, 'heart');
+		s1.nameEl.prepend(i1);
+		s1.nameEl.addClass('storyscore-setting-name');
+			
+
+		const s2 = new Setting(container)
+			.setName(t('HELP_PLUGIN_INFO'))
+			.setDesc(t('HELP_PLUGIN_INFO_DESC'))
+			.addButton(btn => btn.setButtonText(t('HELP_GITHUB')).onClick(() => {
+				window.open("https://github.com/SrPernax/obsidian-storyscore");
+			}));
+		const i2 = s2.nameEl.createSpan({ cls: 'storyscore-help-icon' });
+		setIcon(i2, 'info');
+		s2.nameEl.prepend(i2);
+		s2.nameEl.addClass('storyscore-setting-name');
+			
+		const s3 = new Setting(container)
+			.setName(t('HELP_CONTACT'))
+			.setDesc(t('HELP_CONTACT_DESC'))
+			.addButton(btn => btn.setButtonText(t('HELP_OPEN_ISSUE')).onClick(() => {
+				window.open("https://github.com/SrPernax/obsidian-storyscore/issues/new");
+			}));
+		const i3 = s3.nameEl.createSpan({ cls: 'storyscore-help-icon' });
+		setIcon(i3, 'bug');
+		s3.nameEl.prepend(i3);
+		s3.nameEl.addClass('storyscore-setting-name');
+	}
+}

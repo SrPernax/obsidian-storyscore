@@ -1,7 +1,7 @@
 import {App, ButtonComponent, Notice, TFile} from 'obsidian';
-import {LeitmotifData} from "../../core/dtos/leitmotif-data";
-import {LeitmotifResult} from "../../core/results/leitmotif-result";
-import {LeitmotifInfoModal} from "../informations/leitmotif-info";
+import {LeitmotifData} from "../../core/models/leitmotif-data";
+import {LeitmotifResult} from "../../core/models/leitmotif-result";
+import {LeitmotifInfoModal} from "../modals/info/leitmotif-info";
 
 import type StoryScorePlugin from "../../main";
 

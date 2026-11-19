@@ -1,0 +1,120 @@
+import { App, Modal, Notice, Setting, TextComponent } from 'obsidian';
+import { getImageFiles, getTFileByPath } from "../../../adapters/obsidian-storage";
+import { createSoundtrackFile } from "../../../core/services/create-soundtrack";
+import { updateSoundtrackFile } from "../../../core/services/update-soundtrack";
+import { FilesSuggestModal } from "../../components/files-suggest-modal";
+import { t } from "../../../localization";
+import type StoryScorePlugin from "../../../main";
+import { stripWikiLink } from "../../../core/parsing/wiki-link";
+
+export class NewSoundtrackModal extends Modal {
+	trackTitle: string;
+	trackDescription: string;
+	trackCover: string;
+
+	constructor(app: App, public filePathToEdit: string | null = null, public plugin: StoryScorePlugin) {
+		super(app);
+		this.trackTitle = "";
+		this.trackDescription = "";
+		this.trackCover = "";
+	}
+
+	onOpen() {
+		const fileToEdit = this.filePathToEdit ? getTFileByPath(this.app, this.filePathToEdit) : null;
+		if (fileToEdit) {
+			const cache = this.app.metadataCache.getFileCache(fileToEdit);
+			const fm = cache?.frontmatter;
+			if (fm) {
+				this.trackTitle = (fm.title as string) || fileToEdit.basename;
+				this.trackDescription = (fm.description as string) || "";
+				let coverStr = fm.cover as string;
+				if (coverStr) {
+					coverStr = stripWikiLink(coverStr);
+				}
+				this.trackCover = coverStr || "";
+			}
+		}
+
+		const { contentEl } = this;
+		contentEl.empty();
+
+		let imageInputComponent: TextComponent;
+
+		const imageFiles = getImageFiles(this.app);
+
+		contentEl.createEl('h2', { text: this.filePathToEdit ? t('OST_EDIT_TITLE') : t('OST_ADD_TITLE') });
+
+		new Setting(contentEl)
+			.setName(t('OST_NAME'))
+			.addText(text => text
+				.setValue(this.trackTitle)
+				.setPlaceholder(t('OST_NAME_PLACEHOLDER'))
+				.onChange((value) => {
+					this.trackTitle = value;
+				}));
+
+		new Setting(contentEl)
+			.setName(t('OST_DESC'))
+			.addText(text => text
+				.setValue(this.trackDescription)
+				.setPlaceholder(t('OST_DESC_PLACEHOLDER'))
+				.onChange((value) => {
+					this.trackDescription = value;
+				}));
+
+		new Setting(contentEl)
+			.setName(t('OST_COVER'))
+			.setDesc(t('OST_COVER_DESC'))
+			.addText(text => {
+				imageInputComponent = text;
+				text.setValue(this.trackCover);
+				text.setPlaceholder(t('OST_COVER_PLACEHOLDER'));
+				text.setDisabled(true);
+			})
+			.addButton(btn => btn
+				.setButtonText(t('SEARCH'))
+				.onClick(() => {
+					new FilesSuggestModal(this.app, imageFiles, t('OST_SEARCH_COVER'), (selectedFile) => {
+						this.trackCover = selectedFile.name;
+						imageInputComponent.setValue(selectedFile.name);
+					}).open();
+				})
+			);
+
+		new Setting(contentEl)
+			.addButton(btn => btn
+				.setButtonText(t('SAVE'))
+				.setCta()
+				.onClick(async () => {
+					if (this.trackTitle.trim() === "") {
+						new Notice(t('OST_ERR_NAME'));
+						return;
+					}
+
+					const soundtrackData = {
+						title: this.trackTitle,
+						description: this.trackDescription,
+						cover: this.trackCover
+					};
+
+					try {
+						if (this.filePathToEdit) {
+							await updateSoundtrackFile(this.plugin.storage, this.filePathToEdit, soundtrackData);
+						} else {
+							const baseFolder = this.plugin.settings.baseFolder || 'StoryScore';
+							await createSoundtrackFile(this.plugin.storage, soundtrackData, baseFolder);
+						}
+						new Notice(t('OST_SAVE_NOTICE', soundtrackData.title));
+						this.close();
+					} catch (e) {
+						new Notice(t('ERROR_SAVE_OST'));
+						console.error(e);
+					}
+				}));
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}
