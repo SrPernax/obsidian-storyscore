@@ -5,7 +5,7 @@ import { moment } from 'obsidian';
 
 export function t(key: keyof typeof en, ...args: string[]): string {
     const locale = moment.locale() || 'en';
-    
+
     let translation = key as string;
 
     if (locale === 'es') {
@@ -17,6 +17,5 @@ export function t(key: keyof typeof en, ...args: string[]): string {
     args.forEach((arg, index) => {
         translation = translation.replace(`{${index}}`, arg);
     });
-
     return translation;
 }
