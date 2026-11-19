@@ -12,7 +12,7 @@ export class ObsidianStorageAdapter implements IStoryScoreStorage {
 			return {
 				path: file.path,
 				basename: file.basename,
-				frontmatter: cache?.frontmatter as Record<string, unknown> | undefined,
+				frontmatter: cache?.frontmatter,
 			};
 		});
 	}
