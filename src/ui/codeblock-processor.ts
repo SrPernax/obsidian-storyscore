@@ -1,5 +1,5 @@
 import type StoryScorePlugin from '../main';
-import { t } from '../i18n';
+import { t } from '../localization';
 import { parseCodeBlockId, STORYSCORE_CODEBLOCK } from '../core/parsing/codeblock-parser';
 import { getLeitmotifById } from '../core/repository/leitmotif-queries';
 import { getSoundtrackById } from '../core/repository/soundtrack-queries';

@@ -1,7 +1,7 @@
 import { App, Modal, Notice } from 'obsidian';
 import { SoundtrackResult } from '../../../core/models/soundtrack-result';
 import type StoryScorePlugin from '../../../main';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import { NewSoundtrackModal } from '../creators/add-soundtrack';
 import { getAllTracks } from '../../../core/repository/track-queries';
 import { ConfirmDeleteModal } from '../../components/confirm-delete';

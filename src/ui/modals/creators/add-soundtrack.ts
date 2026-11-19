@@ -3,7 +3,7 @@ import { getImageFiles, getTFileByPath } from "../../../adapters/obsidian-storag
 import { createSoundtrackFile } from "../../../core/services/create-soundtrack";
 import { updateSoundtrackFile } from "../../../core/services/update-soundtrack";
 import { FilesSuggestModal } from "../../components/files-suggest-modal";
-import { t } from "../../../i18n";
+import { t } from "../../../localization";
 import type StoryScorePlugin from "../../../main";
 import { stripWikiLink } from "../../../core/parsing/wiki-link";
 

@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting, setIcon, sanitizeHTMLToDom } from 'obsidian';
 import StoryScorePlugin from '../main';
-import { t } from '../i18n';
+import { t } from '../localization';
 
 import LogoBlack from '../../assets/plugin/logo-black.svg';
 import LogoWhite from '../../assets/plugin/logo-white.svg';

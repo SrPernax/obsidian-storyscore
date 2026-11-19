@@ -4,7 +4,7 @@ import { FilesSuggestModal } from '../../components/files-suggest-modal';
 import { createLeitmotifFile } from '../../../core/services/create-leitmotif';
 import { updateLeitmotifFile } from '../../../core/services/update-leitmotif';
 import { stripWikiLink } from '../../../core/parsing/wiki-link';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import { LM_TYPES } from '../../../core/constants/taxonomy';
 import type StoryScorePlugin from '../../../main';
 

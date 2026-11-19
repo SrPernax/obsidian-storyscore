@@ -8,7 +8,7 @@ import LogoWhite from '../../../assets/plugin/logo-white.svg';
 import { renderTrackList } from "../lists/track-list";
 import { renderSoundtrackList } from "../lists/soundtrack-list";
 import { renderLeitmotifList } from "../lists/leitmotif-list";
-import { t } from "../../i18n";
+import { t } from "../../localization";
 import type StoryScorePlugin from '../../main';
 
 export const VIEW_TYPE_STORYSCORE = "storyscore-view";

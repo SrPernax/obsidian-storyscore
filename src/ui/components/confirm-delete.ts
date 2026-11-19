@@ -1,6 +1,6 @@
 import { App, Modal, Notice } from 'obsidian';
 import { getTFileByPath } from '../../adapters/obsidian-storage';
-import { t } from '../../i18n';
+import { t } from '../../localization';
 
 export class ConfirmDeleteModal extends Modal {
 	constructor(

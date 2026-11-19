@@ -3,7 +3,7 @@ import type StoryScorePlugin from '../../main';
 import { getSoundtracks } from '../../core/repository/soundtrack-queries';
 import { getAllTracks } from '../../core/repository/track-queries';
 import { renderTrackCard } from '../cards/track-card';
-import { t } from '../../i18n';
+import { t } from '../../localization';
 
 export function renderTrackList(
 	container: HTMLElement,

@@ -1,7 +1,7 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
 import { formatCodeBlock } from '../../../core/parsing/codeblock-parser';
 import { getLeitmotifs } from '../../../core/repository/leitmotif-queries';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import type StoryScorePlugin from '../../../main';
 
 export interface LeitmotifItem {

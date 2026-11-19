@@ -3,7 +3,7 @@ import NsLogo from '../../../../assets/plugin/ns-logo.svg';
 import { TrackResult } from '../../../core/models/track-result';
 import { SoundtrackResult } from '../../../core/models/soundtrack-result';
 import StoryScorePlugin from '../../../main';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import { stripWikiLink } from '../../../core/parsing/wiki-link';
 import { TRACK_STATUSES, TRACK_TYPES } from '../../../core/constants/taxonomy';
 import { getLeitmotifById } from '../../../core/repository/leitmotif-queries';

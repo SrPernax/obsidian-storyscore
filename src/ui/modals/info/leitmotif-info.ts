@@ -1,7 +1,7 @@
 import { App, Modal } from 'obsidian';
 import { LeitmotifResult } from '../../../core/models/leitmotif-result';
 import type StoryScorePlugin from '../../../main';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import { NewLeitmotifModal } from '../creators/add-leitmotif';
 import { InformationControl } from '../../components/information-control';
 import { stripWikiLink } from '../../../core/parsing/wiki-link';

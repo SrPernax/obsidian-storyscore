@@ -4,7 +4,7 @@ import { getSoundtracks } from "../../../core/repository/soundtrack-queries";
 import { createTrackFile } from "../../../core/services/create-track";
 import { updateTrackFile } from "../../../core/services/update-track";
 import { FilesSuggestModal } from "../../components/files-suggest-modal";
-import { t } from "../../../i18n";
+import { t } from "../../../localization";
 import { stripWikiLink } from "../../../core/parsing/wiki-link";
 import { TRACK_TYPES, TRACK_STATUSES } from "../../../core/constants/taxonomy";
 import type StoryScorePlugin from "../../../main";

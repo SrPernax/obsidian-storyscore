@@ -1,6 +1,6 @@
 import { App, Notice } from "obsidian";
 import { openNoteByPath } from "../../adapters/obsidian-storage";
-import { t } from "../../i18n";
+import { t } from "../../localization";
 import { ConfirmDeleteModal } from "./confirm-delete";
 import type StoryScorePlugin from "../../main";
 

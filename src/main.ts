@@ -9,7 +9,7 @@ import { LeitmotifInsertModal } from './ui/modals/insert/insert-leitmotif';
 import { SoundtrackInsertModal } from './ui/modals/insert/insert-soundtrack';
 import { TrackInsertModal } from './ui/modals/insert/insert-track';
 import { StoryScoreView, VIEW_TYPE_STORYSCORE } from './ui/view/manager-view';
-import { t } from './i18n';
+import { t } from './localization';
 
 export default class StoryScorePlugin extends Plugin {
 	settings!: StoryScoreSettings;

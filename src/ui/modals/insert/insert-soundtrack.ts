@@ -1,7 +1,7 @@
 import { App, Editor, FuzzySuggestModal } from 'obsidian';
 import { formatCodeBlock } from '../../../core/parsing/codeblock-parser';
 import { getSoundtracks } from '../../../core/repository/soundtrack-queries';
-import { t } from '../../../i18n';
+import { t } from '../../../localization';
 import type StoryScorePlugin from '../../../main';
 
 export interface SoundtrackItem {

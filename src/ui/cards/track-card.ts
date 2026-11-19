@@ -2,7 +2,7 @@ import { App, setIcon } from 'obsidian';
 import { openNoteByPath } from '../../adapters/obsidian-storage';
 import { TrackResult } from '../../core/models/track-result';
 import { SoundtrackResult } from '../../core/models/soundtrack-result';
-import { t } from '../../i18n';
+import { t } from '../../localization';
 import { TRACK_TYPES, TRACK_STATUSES } from '../../core/constants/taxonomy';
 import type StoryScorePlugin from '../../main';
 import { stripWikiLink, parseWikiLink } from '../../core/parsing/wiki-link';
